@@ -51,3 +51,5 @@ app.use("*", (req, res, next) => {
 const server = app.listen(port, () => {
     console.log(`Server is listening at http://localhost:${port}  - ${Date()}`);
 });
+
+export default server;
