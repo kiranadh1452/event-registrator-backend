@@ -68,25 +68,27 @@ export const getUserById = async (req, res, next) => {
 export const createUser = async (req, res, next) => {
     try {
         const {
-            name,
             email,
-            phone,
-            country,
+            firstName,
+            lastName,
+            phoneNumber,
             address,
             zip_code,
+            password,
             is_admin,
-            password_hash,
+            dateOfBirth,
         } = req.body;
 
         const user = new User({
-            name,
             email,
-            phone,
-            country,
+            firstName,
+            lastName,
+            phoneNumber,
             address,
             zip_code,
+            password,
             is_admin,
-            password_hash,
+            dateOfBirth,
         });
 
         await user.save();
@@ -111,7 +113,19 @@ export const createUser = async (req, res, next) => {
 export const updateUserById = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const user = await User.findOne({ where: { id } });
+        const {
+            email,
+            firstName,
+            lastName,
+            phoneNumber,
+            address,
+            zip_code,
+            password,
+            is_admin,
+            dateOfBirth,
+        } = req.query;
+
+        const user = await User.findById(id).exec();
 
         if (!user) {
             return res.status(404).json({
@@ -123,7 +137,25 @@ export const updateUserById = async (req, res, next) => {
         }
 
         // Update user data
-        await user.update(req.body);
+        const propsToUpdate = {
+            email,
+            firstName,
+            lastName,
+            phoneNumber,
+            address,
+            zip_code,
+            password,
+            is_admin,
+            dateOfBirth,
+        };
+
+        Object.keys(propsToUpdate).forEach((key) => {
+            if (propsToUpdate[key]) {
+                user[key] = propsToUpdate[key];
+            }
+        });
+
+        await user.save();
 
         return res.status(200).json({
             code: 200,
@@ -134,7 +166,7 @@ export const updateUserById = async (req, res, next) => {
         return res.status(500).json({
             code: 500,
             message: "Internal server error",
-            error,
+            error: error.message,
         });
     }
 };
@@ -144,7 +176,7 @@ export const deleteUserById = async (req, res, next) => {
         const { id } = req.params;
         const { keep_events = false, keep_tickets = false } = req.query;
 
-        const user = await User.findOne({ where: { id } });
+        const user = await User.findById(id).exec();
 
         if (!user) {
             return res.status(404).json({
@@ -164,7 +196,7 @@ export const deleteUserById = async (req, res, next) => {
         // }
 
         // delete user
-        await user.delete();
+        await User.findByIdAndDelete(id);
 
         return res.status(200).json({
             code: 200,
@@ -174,7 +206,7 @@ export const deleteUserById = async (req, res, next) => {
         return res.status(500).json({
             code: 500,
             message: "Internal server error",
-            error,
+            error: error.message,
         });
     }
 };
