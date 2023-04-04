@@ -1,6 +1,13 @@
 import express from "express";
 
-// Import the event controller here
+// Importing the event controllers
+import {
+    getAllUsers,
+    createUser,
+    getUserById,
+    updateUserById,
+    deleteUserById,
+} from "./controller.js";
 
 const router = express.Router();
 
@@ -12,5 +19,20 @@ router.get("/test", (req, res) => {
         data: "Test endpoint - Users",
     });
 });
+
+// Get all users
+router.get("/", getAllUsers);
+
+// Create a new user
+router.post("/", createUser);
+
+// Get a specific user by ID
+router.get("/:id", getUserById);
+
+// Update a specific user by ID
+router.put("/:id", updateUserById);
+
+// Delete a specific user by ID
+router.delete("/:id", deleteUserById);
 
 export default router;

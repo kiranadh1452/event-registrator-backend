@@ -1,7 +1,10 @@
 import cors from "cors";
-import dotenv from "dotenv";
+import * as dotenv from 'dotenv'
 import express from "express";
 import bodyParser from "body-parser";
+
+// import the database connection
+import connectDB from "./config/db.js";
 
 // Import routes
 import usersRouter from "./v1/users/router.js";
@@ -11,9 +14,12 @@ import eventTypesRouter from "./v1/event-types/router.js";
 
 // configure environment variables
 dotenv.config({
-    path: "./src/config.env",
+    path: "./src/config/config.env",
 });
 const port = process.env.PORT || 3000;
+
+// database
+connectDB();
 
 // creating express app and configuring it
 const app = express();
