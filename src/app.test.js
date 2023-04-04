@@ -45,7 +45,7 @@ const expectedData = [
 
 // Loop through the expectedData and test them
 for (const endpoint of expectedData) {
-    describe(`GET ${endpoint.path}`, () => {
+    describe(`${(endpoint.method).toUpperCase()} ${endpoint.path} - ${endpoint.expectedData}`, () => {
         it("responds with status 200 and a success message", (done) => {
             request(app)
                 [endpoint.method](endpoint.path)
