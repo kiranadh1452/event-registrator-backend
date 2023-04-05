@@ -11,7 +11,7 @@ import {
 } from "./controller.js";
 
 // importing the middleware
-import { userAuthenticatorMiddleware } from "./middleware.js";
+import { userAuthenticatorMiddleware, isCurrentUser } from "./middleware.js";
 
 const router = express.Router();
 
@@ -34,10 +34,15 @@ router.post("/", createUser);
 router.get("/:id", getUserById);
 
 // Update a specific user by ID
-router.put("/:id", userAuthenticatorMiddleware, updateUserById);
+router.put("/:id", userAuthenticatorMiddleware, isCurrentUser, updateUserById);
 
 // Delete a specific user by ID
-router.delete("/:id", userAuthenticatorMiddleware, deleteUserById);
+router.delete(
+    "/:id",
+    userAuthenticatorMiddleware,
+    isCurrentUser,
+    deleteUserById
+);
 
 // login user
 router.post("/login", loginUser);

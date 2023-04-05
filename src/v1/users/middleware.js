@@ -47,3 +47,29 @@ export const userAuthenticatorMiddleware = async (req, res, next) => {
         });
     }
 };
+
+export const isCurrentUser = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        if (id !== res.locals.authData._id) {
+            return res.status(401).json({
+                error: {
+                    status: 401,
+                    message: "Access Denied",
+                },
+            });
+        }
+
+        next();
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error: {
+                status: 500,
+                message: "Internal Server Error",
+                details: error.message,
+            },
+        });
+    }
+};

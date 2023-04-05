@@ -1,8 +1,13 @@
 import express from "express";
 
+// Import middleware here
+import { userAuthenticatorForEventsMiddleware } from "./middleware.js";
+
 // Import the event controller here
 
 const router = express.Router();
+
+router.use(userAuthenticatorForEventsMiddleware);
 
 // Define the event routes here
 router.get("/test", (req, res) => {

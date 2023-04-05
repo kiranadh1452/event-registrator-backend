@@ -1,6 +1,6 @@
 import cors from "cors";
-import * as dotenv from "dotenv";
 import express from "express";
+import * as dotenv from "dotenv";
 import bodyParser from "body-parser";
 
 // import the database connection
