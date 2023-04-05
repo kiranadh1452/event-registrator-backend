@@ -2,6 +2,7 @@ import express from "express";
 
 // Importing the event controllers
 import {
+    loginUser,
     getAllUsers,
     createUser,
     getUserById,
@@ -34,5 +35,8 @@ router.put("/:id", updateUserById);
 
 // Delete a specific user by ID
 router.delete("/:id", deleteUserById);
+
+// login user
+router.post("/login", loginUser);
 
 export default router;

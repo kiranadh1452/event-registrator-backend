@@ -1,20 +1,26 @@
+import jwt from "jsonwebtoken";
 import User from "./model.js";
 
 // Get all users
 export const getAllUsers = async (req, res, next) => {
     try {
-        const { name, email, created_at_before, created_at_after, is_admin } =
-            req.query;
+        const {
+            first_name,
+            email,
+            created_at_before,
+            created_at_after,
+            is_admin,
+        } = req.query;
 
         const query = {};
 
-        if (name) query.name = { $regex: name, $options: "i" };
+        if (first_name) query.firstName = { $regex: first_name, $options: "i" };
         if (email) query.email = { $regex: email, $options: "i" };
-        if (created_at_before) query.createdAt = { $lte: created_at_before };
-        if (created_at_after) query.createdAt = { $gte: created_at_after };
+        if (created_at_before) query.created_at = { $lte: created_at_before };
+        if (created_at_after) query.created_at = { $gte: created_at_after };
         if (is_admin !== undefined) query.is_admin = is_admin;
 
-        const users = await User.find(query).exec();
+        const users = await User.find(query, { password: 0, __v: 0 }).exec();
 
         return res.status(200).json({
             code: 200,
@@ -26,7 +32,7 @@ export const getAllUsers = async (req, res, next) => {
             error: {
                 code: 500,
                 message: "Internal Server Error",
-                details: error,
+                details: error.message,
             },
         });
     }
@@ -58,7 +64,7 @@ export const getUserById = async (req, res, next) => {
             error: {
                 code: 500,
                 message: "Internal Server Error",
-                details: error,
+                details: error.message,
             },
         });
     }
@@ -103,7 +109,7 @@ export const createUser = async (req, res, next) => {
             error: {
                 code: 500,
                 message: "Internal Server Error",
-                details: error,
+                details: error.message,
             },
         });
     }
@@ -164,9 +170,11 @@ export const updateUserById = async (req, res, next) => {
         });
     } catch (error) {
         return res.status(500).json({
-            code: 500,
-            message: "Internal server error",
-            error: error.message,
+            error: {
+                code: 500,
+                message: "Internal Server Error",
+                details: error.message,
+            },
         });
     }
 };
@@ -204,9 +212,62 @@ export const deleteUserById = async (req, res, next) => {
         });
     } catch (error) {
         return res.status(500).json({
-            code: 500,
-            message: "Internal server error",
-            error: error.message,
+            error: {
+                code: 500,
+                message: "Internal Server Error",
+                details: error.message,
+            },
+        });
+    }
+};
+
+// login user
+export const loginUser = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email: email });
+
+        if (!user) {
+            return res.status(404).json({
+                error: {
+                    code: 404,
+                    message: "Resource not found",
+                    details: "No user found with this details",
+                },
+            });
+        }
+
+        const passwordMatch = await user.authentication(password);
+
+        if (!passwordMatch) {
+            return res.status(401).json({
+                error: {
+                    code: 401,
+                    message: "Invalid credentials",
+                },
+            });
+        }
+
+        const userObj = user.toObject();
+        delete userObj.password;
+        delete userObj.__v;
+
+        const token = await jwt.sign({ ...userObj }, process.env.JWT_SECRET, {
+            expiresIn: "1h",
+        });
+
+        return res.status(200).json({
+            message: "Authentication successful",
+            token: token,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: {
+                code: 500,
+                message: "Internal Server Error",
+                details: error.message,
+            },
         });
     }
 };
