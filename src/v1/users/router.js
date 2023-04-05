@@ -10,6 +10,9 @@ import {
     deleteUserById,
 } from "./controller.js";
 
+// importing the middleware
+import { userAuthenticatorMiddleware } from "./middleware.js";
+
 const router = express.Router();
 
 // Define the event routes here
@@ -31,10 +34,10 @@ router.post("/", createUser);
 router.get("/:id", getUserById);
 
 // Update a specific user by ID
-router.put("/:id", updateUserById);
+router.put("/:id", userAuthenticatorMiddleware, updateUserById);
 
 // Delete a specific user by ID
-router.delete("/:id", deleteUserById);
+router.delete("/:id", userAuthenticatorMiddleware, deleteUserById);
 
 // login user
 router.post("/login", loginUser);

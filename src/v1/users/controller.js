@@ -43,7 +43,7 @@ export const getUserById = async (req, res, next) => {
     try {
         const { id } = req.params;
 
-        const user = await User.findById(id).exec();
+        const user = await User.findById(id, { password: 0, __v: 0 }).exec();
 
         if (!user) {
             return res.status(404).json({
@@ -163,10 +163,14 @@ export const updateUserById = async (req, res, next) => {
 
         await user.save();
 
+        const userObj = user.toObject();
+        delete userObj.password;
+        delete userObj.__v;
+
         return res.status(200).json({
             code: 200,
             message: "User updated successfully",
-            data: user,
+            data: userObj,
         });
     } catch (error) {
         return res.status(500).json({
@@ -259,6 +263,7 @@ export const loginUser = async (req, res, next) => {
 
         return res.status(200).json({
             message: "Authentication successful",
+            id: user._id,
             token: token,
         });
     } catch (error) {
