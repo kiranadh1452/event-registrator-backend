@@ -4,6 +4,7 @@ import express from "express";
 import { userAuthenticatorForEventsMiddleware } from "./middleware.js";
 
 // Import the event controller here
+import * as eventsController from "./controller.js";
 
 const router = express.Router();
 
@@ -17,5 +18,20 @@ router.get("/test", (req, res) => {
         data: "Test endpoint - Events",
     });
 });
+
+// GET all events
+router.get("/", eventsController.getAllEventsController);
+
+// POST a new event
+router.post("/", eventsController.createEventController);
+
+// GET a specific event by ID
+router.get("/:id", eventsController.getEventByIdController);
+
+// PUT update an existing event by ID
+router.put("/:id", eventsController.updateEventByIdController);
+
+// DELETE an existing event by ID
+router.delete("/:id", eventsController.deleteEventByIdController);
 
 export default router;
