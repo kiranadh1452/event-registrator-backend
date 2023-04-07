@@ -1,4 +1,9 @@
 import Stripe from "stripe";
+import * as dotenv from "dotenv";
+
+dotenv.config({
+    path: "./src/config/config.env",
+});
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -8,7 +13,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
  * @param {string} id - id of the customer
  * @returns {object} customer
  */
-export const addNewCustomer = async ({ id, email }) => {
+export const addNewCustomer = async (id, email) => {
     try {
         const customer = await stripe.customers.create({
             id,
@@ -54,7 +59,9 @@ export const createNewProduct = async (name, description) => {
 
         return product;
     } catch (error) {
-        throw new Error(`Error while creating product '${name}' : ${error.message}`);
+        throw new Error(
+            `Error while creating product '${name}' : ${error.message}`
+        );
     }
 };
 
