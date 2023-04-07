@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import Stripe from "stripe";
 import * as dotenv from "dotenv";
 
@@ -50,9 +51,10 @@ export const getCustomerById = async (id) => {
  * @param {string} description - description of the product
  * @returns {object} product
  */
-export const createNewProduct = async (name, description) => {
+export const createNewProduct = async (id, name, description) => {
     try {
         const product = await stripe.products.create({
+            id,
             name,
             description,
         });
@@ -113,26 +115,94 @@ export const createNewPaymentLink = async (priceId, quantity = 1) => {
     }
 };
 
-export const generatePaymentLinkForEvent = async (
+/**
+ * description: create a new checkout session
+ * @param {string} priceId - id of the price
+ * @param {number} quantity - quantity of the price
+ * @returns {object} session object
+ */
+export const createNewCheckoutSession = async (
+    priceId,
+    customerId,
+    quantity = 1
+) => {
+    try {
+        const session = await stripe.checkout.sessions.create({
+            line_items: [
+                {
+                    price: priceId,
+                    quantity,
+                },
+            ],
+            customer: customerId,
+            success_url: process.env.SUCCESS_URL_PAYMENT,
+            mode: "payment",
+        });
+
+        return session;
+    } catch (error) {
+        throw new Error(
+            `Error while creating checkout session, ${error.message}`
+        );
+    }
+};
+
+export const generateCheckoutSessionForEvent = async (
+    customerId,
     eventName,
     eventDescription,
     eventPrice
 ) => {
     try {
-        // create a product first
-        const product = await createNewProduct(eventName, eventDescription);
+        let price = null;
+        let product = null;
+        let newlyCreatedProduct = true;
 
-        // create a price for the product
-        const price = await createNewPrice(product.id, eventPrice);
+        const productId = crypto
+            .createHash("sha256")
+            .update(eventName)
+            .digest("hex");
 
-        // create a payment link for the price
-        const paymentLink = await createNewPaymentLink(price.id);
+        // search if there is a product, else create a new one
+        try {
+            product = await stripe.products.retrieve(productId);
+            newlyCreatedProduct = false;
+        } catch (error) {
+            product = await createNewProduct(
+                productId,
+                eventName,
+                eventDescription
+            );
+        }
+
+        if (newlyCreatedProduct) {
+            // create a price for the product
+            price = await createNewPrice(product.id, eventPrice);
+        } else {
+            // search if there is a price for the product
+            const prices = await stripe.prices.list({
+                limit: 1,
+                product: product.id,
+            });
+
+            // if there is a price for the product, use it || else create a new one
+            if (prices.data.length > 0) {
+                price = prices.data[0];
+            } else {
+                // create a price for the product
+                price = await createNewPrice(product.id, eventPrice);
+            }
+        }
+
+        const checkoutSession = await createNewCheckoutSession(
+            price.id,
+            customerId
+        );
 
         return {
-            paymentLinkId: paymentLink.id,
-            paymentLinkUrl: paymentLink.url,
             priceId: price.id,
             productId: product.id,
+            sessionUrl: checkoutSession.url,
         };
     } catch (error) {
         throw new Error(
