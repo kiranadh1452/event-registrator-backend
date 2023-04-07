@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "./model.js";
+import { addNewCustomer } from "../stripe-handler/stripeHandler.js";
 
 // Get all users
 export const getAllUsers = async (req, res, next) => {
@@ -98,6 +99,16 @@ export const createUser = async (req, res, next) => {
         });
 
         await user.save();
+
+        // create stripe customer
+        try {
+            await addNewCustomer(user._id.toString(), user.email);
+        } catch (error) {
+            console.log("Stripe customer creation failed");
+            throw new Error(
+                `User created successfully with id ${user._id} but stripe customer creation failed : ${error.message}`
+            );
+        }
 
         return res.status(201).json({
             code: 201,
