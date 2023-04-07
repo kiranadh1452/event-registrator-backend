@@ -8,8 +8,6 @@ import * as eventsController from "./controller.js";
 
 const router = express.Router();
 
-router.use(userAuthenticatorForEventsMiddleware);
-
 // Define the event routes here
 router.get("/test", (req, res) => {
     return res.status(200).json({
@@ -18,6 +16,8 @@ router.get("/test", (req, res) => {
         data: "Test endpoint - Events",
     });
 });
+
+router.use(userAuthenticatorForEventsMiddleware);
 
 // GET all events
 router.get("/", eventsController.getAllEventsController);

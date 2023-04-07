@@ -43,7 +43,14 @@ const getEventById = async (eventId, res, hasToBeOwner = true) => {
         return [true, event];
     } catch (error) {
         console.log(error);
-        return [false, false];
+        return [
+            false,
+            {
+                code: 500,
+                message: "Internal Server Error",
+                details: error.message,
+            },
+        ];
     }
 };
 
@@ -184,7 +191,7 @@ export const getEventByIdController = async (req, res) => {
 
         const [success, event] = await getEventById(id, res);
         if (!success) {
-            return res.status(404).json({
+            return res.status(event.code || 404).json({
                 error: event,
             });
         }
@@ -222,7 +229,7 @@ export const updateEventByIdController = async (req, res) => {
 
         const [success, event] = await getEventById(id, res);
         if (!success) {
-            return res.status(404).json({
+            return res.status(event.code || 404).json({
                 error: event,
             });
         }
@@ -238,13 +245,13 @@ export const updateEventByIdController = async (req, res) => {
             image,
             event_type,
         };
-
         Object.keys(propsToUpdate).forEach((key) => {
             if (propsToUpdate[key]) {
                 event[key] = propsToUpdate[key];
             }
         });
 
+        // save the updated event to the database
         await event.save();
 
         return res.status(200).json({
@@ -270,7 +277,7 @@ export const deleteEventByIdController = async (req, res) => {
 
         const [success, event] = await getEventById(id, res);
         if (!success) {
-            return res.status(404).json({
+            return res.status(event.code || 400).json({
                 error: event,
             });
         }
