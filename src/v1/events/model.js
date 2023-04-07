@@ -21,6 +21,10 @@ const eventSchema = new mongoose.Schema({
         required: true,
         index: "text",
     },
+    price: {
+        type: Number,
+        required: true,
+    },
     start_time: {
         type: Date,
         required: true,

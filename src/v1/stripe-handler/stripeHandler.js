@@ -205,7 +205,7 @@ export const createNewProductAndPrice = async (
         };
     } catch (error) {
         throw new Error(
-            `Error while generating payment link for event '${eventId}' : ${error.message}`
+            `Error while generating product in Stripe for event ${eventName} : ${error.message}`
         );
     }
 };
@@ -269,7 +269,7 @@ export const generateCheckoutSessionForEvent = async (
         };
     } catch (error) {
         throw new Error(
-            `Error while generating payment link for event '${eventId}' : ${error.message}`
+            `Error while generating payment link for event '${eventName}' : ${error.message}`
         );
     }
 };

@@ -166,6 +166,7 @@ export const createEventController = async (req, res) => {
             name,
             productId,
             priceId,
+            price,
             description,
             start_time,
             end_time,
@@ -227,14 +228,13 @@ export const updateEventByIdController = async (req, res) => {
     try {
         const { id } = req.params;
         const {
-            productId,
-            name,
             description,
             start_time,
             end_time,
             location,
             image,
             event_type,
+            price,
         } = req.body;
 
         const [success, event] = await getEventById(id, res);
@@ -246,14 +246,13 @@ export const updateEventByIdController = async (req, res) => {
 
         // update the event
         const propsToUpdate = {
-            productId,
-            name,
             description,
             start_time,
             end_time,
             location,
             image,
             event_type,
+            price,
         };
         Object.keys(propsToUpdate).forEach((key) => {
             if (propsToUpdate[key]) {
