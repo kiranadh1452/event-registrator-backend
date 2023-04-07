@@ -159,6 +159,9 @@ export const createNewProductAndPrice = async (
     eventPrice
 ) => {
     try {
+        // stripe calculates price in cents
+        eventPrice = eventPrice * 100;
+
         let price = null;
         let product = null;
         let newlyCreatedProduct = true;
