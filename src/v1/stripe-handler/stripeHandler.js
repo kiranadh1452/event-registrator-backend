@@ -147,6 +147,69 @@ export const createNewCheckoutSession = async (
     }
 };
 
+/**
+ * description: create a new product and price for that product | Here, product is the event
+ * @param {string} eventName - name of the event
+ * @param {string} eventDescription - description of the event
+ * @param {number} eventPrice - price of the event
+ */
+export const createNewProductAndPrice = async (
+    eventName,
+    eventDescription,
+    eventPrice
+) => {
+    try {
+        let price = null;
+        let product = null;
+        let newlyCreatedProduct = true;
+
+        const productId = crypto
+            .createHash("sha256")
+            .update(eventName)
+            .digest("hex");
+
+        // search if there is a product, else create a new one
+        try {
+            product = await stripe.products.retrieve(productId);
+            newlyCreatedProduct = false;
+        } catch (error) {
+            product = await createNewProduct(
+                productId,
+                eventName,
+                eventDescription
+            );
+        }
+
+        if (newlyCreatedProduct) {
+            // create a price for the product
+            price = await createNewPrice(product.id, eventPrice);
+        } else {
+            // search if there is a price for the product
+            const prices = await stripe.prices.list({
+                limit: 1,
+                product: product.id,
+            });
+
+            // if there is a price for the product, use it || else create a new one
+            if (prices.data.length > 0) {
+                price = prices.data[0];
+            } else {
+                // create a price for the product
+                price = await createNewPrice(product.id, eventPrice);
+            }
+        }
+
+        return {
+            priceId: price.id,
+            productId: product.id,
+        };
+    } catch (error) {
+        throw new Error(
+            `Error while generating payment link for event '${eventId}' : ${error.message}`
+        );
+    }
+};
+
 export const generateCheckoutSessionForEvent = async (
     customerId,
     eventName,
