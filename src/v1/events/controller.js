@@ -17,7 +17,10 @@ const getEventById = async (eventId, res, hasToBeOwner = true) => {
             ];
         }
 
-        const event = await Event.findById(eventId);
+        const event = await Event.findById(eventId).populate({
+            path: "organizer_id",
+            select: "-password -__v -created_at -updated_at",
+        });
         if (!event) {
             return [
                 false,
@@ -29,7 +32,9 @@ const getEventById = async (eventId, res, hasToBeOwner = true) => {
             ];
         }
 
-        const isCurrUserOwner = event.organizer_id.toString() === currentUserId;
+        // the reson why I am using organizer_id._id is beacaue the organizer_id is populated with user object in above query
+        const isCurrUserOwner =
+            event.organizer_id._id.toString() == currentUserId;
         if (hasToBeOwner && !isCurrUserOwner) {
             return res.status(401).json({
                 error: {
