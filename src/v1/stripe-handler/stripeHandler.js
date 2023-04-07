@@ -112,3 +112,31 @@ export const createNewPaymentLink = async (priceId, quantity = 1) => {
         throw new Error(`Error while creating payment link, ${error.message}`);
     }
 };
+
+export const generatePaymentLinkForEvent = async (
+    eventName,
+    eventDescription,
+    eventPrice
+) => {
+    try {
+        // create a product first
+        const product = await createNewProduct(eventName, eventDescription);
+
+        // create a price for the product
+        const price = await createNewPrice(product.id, eventPrice);
+
+        // create a payment link for the price
+        const paymentLink = await createNewPaymentLink(price.id);
+
+        return {
+            paymentLinkId: paymentLink.id,
+            paymentLinkUrl: paymentLink.url,
+            priceId: price.id,
+            productId: product.id,
+        };
+    } catch (error) {
+        throw new Error(
+            `Error while generating payment link for event '${eventId}' : ${error.message}`
+        );
+    }
+};
