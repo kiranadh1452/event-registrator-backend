@@ -1,4 +1,5 @@
 import Event from "./model.js";
+import { createNewProductAndPrice } from "../stripe-handler/stripeHandler.js";
 
 // helper functions to reduce the code in the controller functions
 
@@ -147,7 +148,6 @@ export const getAllEventsController = async (req, res) => {
 export const createEventController = async (req, res) => {
     try {
         const {
-            productId,
             name,
             description,
             start_time,
@@ -155,12 +155,17 @@ export const createEventController = async (req, res) => {
             location,
             image,
             event_type,
+            price,
         } = req.body;
+
+        const { priceId, productId} =
+            await createNewProductAndPrice(name, description, price);
 
         // create the new event
         const newEvent = new Event({
-            productId,
             name,
+            productId,
+            priceId,
             description,
             start_time,
             end_time,
@@ -171,12 +176,12 @@ export const createEventController = async (req, res) => {
         });
 
         // save the new event to the database
-        const savedEvent = await newEvent.save();
+        await newEvent.save();
 
         return res.status(201).json({
             code: 201,
             message: "Created",
-            data: savedEvent,
+            data: newEvent,
         });
     } catch (error) {
         return res.status(500).json({
