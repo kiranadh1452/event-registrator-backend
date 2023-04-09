@@ -137,6 +137,10 @@ export const createNewCheckoutSession = async (
             customer: customerId,
             success_url: process.env.SUCCESS_URL_PAYMENT,
             mode: "payment",
+            metadata: {
+                customerId,
+                priceId,
+            },
         });
 
         return session;
@@ -274,5 +278,25 @@ export const generateCheckoutSessionForEvent = async (
         throw new Error(
             `Error while generating payment link for event '${eventName}' : ${error.message}`
         );
+    }
+};
+
+/**
+ * description: create an event hook
+ * @param {object} rawBody - raw body of the request
+ * @param {string} signature - signature of the request
+ * @returns {object} event
+ */
+export const createWebhook = async (rawBody, signature) => {
+    try {
+        const event = await stripe.webhooks.constructEvent(
+            rawBody,
+            signature,
+            process.env.STRIPE_WEBHOOK_SECRET
+        );
+        return event;
+    } catch (error) {
+        console.log(error);
+        throw new Error(`Error while creating webhook, ${error.message}`);
     }
 };
