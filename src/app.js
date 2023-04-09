@@ -11,6 +11,7 @@ import usersRouter from "./v1/users/router.js";
 import eventsRouter from "./v1/events/router.js";
 import ticketsRouter from "./v1/tickets/router.js";
 import eventTypesRouter from "./v1/event-types/router.js";
+import stripeRouter from "./v1/stripe-handler/webhookRouter.js";
 
 // configure environment variables
 dotenv.config({
@@ -24,6 +25,13 @@ connectDB();
 // creating express app and configuring it
 const app = express();
 app.set("port", port);
+
+// the webhook requires the raw body to construct the event
+app.use("/v1/stripe", bodyParser.raw({ type: "application/json" }), stripeRouter);
+
+// using body parser.json to parse json data. The reason why we are not using this in stripe webhook is because
+// the stripe webhook requires the raw body to construct the event
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
