@@ -300,3 +300,55 @@ export const createWebhook = async (rawBody, signature) => {
         throw new Error(`Error while creating webhook, ${error.message}`);
     }
 };
+
+/**
+ * description: This function is used to filter the data from the checkout session object
+ * @param {object} checkoutSessionObj - checkout session object
+ * @returns {object} desiredData - desired data from the checkout session object
+ */
+export const getDesiredDataFromCheckoutSession = (checkoutSessionObj) => {
+    try {
+        const {
+            id,
+            amount_total,
+            created,
+            currency,
+            customer,
+            customer_email,
+            customer_details,
+            payment_intent,
+            payment_status,
+            total_details,
+            // line_items,
+            metadata,
+            status,
+        } = checkoutSessionObj;
+
+        // extracting the desired data from the checkout session object
+        const { email, name } = customer_details;
+        const { customerId, priceId } = metadata;
+        const { amount_shipping, amount_discount, amount_tax } = total_details;
+
+        return {
+            customerId,
+            priceId,
+            status,
+
+            sessionId: id,
+            total_amount: amount_total,
+            session_created: new Date(created * 1000),
+            currency,
+            userId: customer,
+            email: customer_email || email,
+            name,
+            payment_intent,
+            payment_status,
+            amount_shipping,
+            amount_discount,
+            amount_tax,
+        };
+    } catch (error) {
+        console.log("Error in getDesiredDataFromCheckoutSession: ");
+        throw error;
+    }
+};
