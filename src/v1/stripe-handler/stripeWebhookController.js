@@ -35,7 +35,7 @@ const getDesiredDataFromCheckoutSession = (checkoutSessionObj) => {
 
             sessionId: id,
             total_amount: amount_total,
-            created: new Date(created * 1000),
+            session_created: new Date(created * 1000),
             currency,
             userId: customer,
             email: customer_email || email,
