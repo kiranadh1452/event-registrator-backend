@@ -20,6 +20,7 @@ const getDesiredDataFromCheckoutSession = (checkoutSessionObj) => {
             total_details,
             // line_items,
             metadata,
+            status,
         } = checkoutSessionObj;
 
         // extracting the desired data from the checkout session object
@@ -30,6 +31,7 @@ const getDesiredDataFromCheckoutSession = (checkoutSessionObj) => {
         return {
             customerId,
             priceId,
+            status,
 
             sessionId: id,
             total_amount: amount_total,
