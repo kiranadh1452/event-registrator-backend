@@ -1,4 +1,9 @@
 import Ticket from "./model.js";
+import { getEventById } from "../events/controller.js";
+import {
+    createNewCheckoutSession,
+    getDesiredDataFromCheckoutSession,
+} from "../stripe-handler/stripeHandler.js";
 
 // helper functions to reduce the code in the controller functions
 const getTicketById = async (ticketId, res, hasToBeAdmin = true) => {
@@ -209,6 +214,50 @@ export const getTicketByIdController = async (req, res, next) => {
  */
 export const createTicketController = async (req, res, next) => {
     try {
+        const { eventId, quantity, type } = req.body;
+
+        // check if the event exists
+        const [isEventSuccess, event] = await getEventById(eventId, res, false);
+        if (!isEventSuccess) {
+            return res.status(event.code).json({
+                error: event,
+            });
+        }
+
+        // make sure that the event has a priceId
+        if (!event.priceId) {
+            return res.status(400).json({
+                error: {
+                    code: 400,
+                    message: "Non purchasable event",
+                    details: "PriceId is not defined for the event.",
+                },
+            });
+        }
+
+        // create a checkout session
+        const session = await createNewCheckoutSession(
+            event.priceId,
+            res.locals.authData._id,
+            (quantity = 1)
+        );
+
+        const desiredData = getDesiredDataFromCheckoutSession(session);
+
+        const ticket = new Ticket({
+            ...desiredData,
+            eventId,
+            quantity,
+            type,
+        });
+
+        const savedTicket = await ticket.save();
+
+        return res.status(201).json({
+            code: 201,
+            message: "Success",
+            data: savedTicket,
+        });
     } catch (error) {
         return res.status(500).json({
             error: {
