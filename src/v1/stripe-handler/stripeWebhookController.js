@@ -11,14 +11,29 @@ import Ticket from "../tickets/model.js";
  */
 const onSessionCompleteController = async (desiredData) => {
     try {
-        const { sessionId } = desiredData;
+        const { sessionId, status, payment_status } = desiredData;
 
         // get the ticket by sessionId
-        const ticket = await Ticket.find({ session_id: sessionId });
+        const ticket = await Ticket.find({ sessionId: sessionId });
 
         // if the ticket exists, update the ticket with the desired data props
         if (ticket) {
-            await Ticket.findByIdAndUpdate(ticket._id, desiredData);
+            // if the session is expired, delete the ticket
+            if (status == "expired" && payment_status == "unpaid") {
+                // delete the ticket
+                await Ticket.deleteOne({ sessionId: sessionId });
+
+                return true;
+            }
+
+            await Ticket.updateOne(
+                { sessionId: sessionId },
+                {
+                    $set: {
+                        ...desiredData,
+                    },
+                }
+            );
         }
 
         return true;

@@ -124,13 +124,13 @@ export const getTicketsController = async (req, res, next) => {
         if (total_amount_min) {
             filter.total_amount = {
                 ...filter.total_amount,
-                $gte: total_amount_min,
+                $gte: total_amount_min * 100,
             };
         }
         if (total_amount_max) {
             filter.total_amount = {
                 ...filter.total_amount,
-                $lte: total_amount_max,
+                $lte: total_amount_max * 100,
             };
         }
         if (currency) {
