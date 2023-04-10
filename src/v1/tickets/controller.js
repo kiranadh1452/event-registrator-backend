@@ -69,6 +69,96 @@ const getTicketById = async (ticketId, res, hasToBeAdmin = true) => {
  */
 export const getTicketsController = async (req, res, next) => {
     try {
+        const {
+            eventId,
+            quantity,
+            type,
+            status,
+            sessionId,
+            session_created_before,
+            session_created_after,
+            total_amount_min,
+            total_amount_max,
+            currency,
+            userId,
+            priceId,
+            payment_intent,
+            payment_status,
+            session_url,
+        } = req.query;
+
+        const filter = {};
+
+        if (eventId) {
+            filter.eventId = eventId;
+        }
+        if (quantity) {
+            filter.quantity = quantity;
+        }
+        if (type) {
+            filter.type = type;
+        }
+        if (status) {
+            filter.status = status;
+        }
+        if (sessionId) {
+            filter.sessionId = sessionId;
+        }
+        if (session_created_before) {
+            filter.session_created = {
+                $lt: new Date(session_created_before),
+            };
+        }
+        if (session_created_after) {
+            filter.session_created = {
+                $gt: new Date(session_created_after),
+            };
+        }
+        if (total_amount_min) {
+            filter.total_amount = {
+                $gte: total_amount_min,
+            };
+        }
+        if (total_amount_max) {
+            filter.total_amount = {
+                $lte: total_amount_max,
+            };
+        }
+        if (currency) {
+            filter.currency = currency;
+        }
+        if (userId) {
+            filter.userId = userId;
+        }
+        if (priceId) {
+            filter.priceId = priceId;
+        }
+        if (payment_intent) {
+            filter.payment_intent = payment_intent;
+        }
+        if (payment_status) {
+            filter.payment_status = payment_status;
+        }
+        if (session_url) {
+            filter.session_url = session_url;
+        }
+
+        const tickets = await Ticket.find(filter).populate(
+            {
+                path: "userId",
+                select: "email firstName lastName",
+            },
+            {
+                path: "eventId",
+                select: "name",
+            }
+        );
+
+        return res.status(200).json({
+            code: 200,
+            message: "Success",
+            data: tickets,
+        });
     } catch (error) {
         return res.status(500).json({
             error: {
