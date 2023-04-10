@@ -152,7 +152,7 @@ export const getTicketsController = async (req, res, next) => {
             filter.session_url = session_url;
         }
 
-        const tickets = await Ticket.find(filter).populate(
+        const tickets = await Ticket.find(filter).populate([
             {
                 path: "userId",
                 select: "email firstName lastName",
@@ -160,8 +160,8 @@ export const getTicketsController = async (req, res, next) => {
             {
                 path: "eventId",
                 select: "name",
-            }
-        );
+            },
+        ]);
 
         return res.status(200).json({
             code: 200,
@@ -215,6 +215,21 @@ export const getTicketByIdController = async (req, res, next) => {
 export const createTicketController = async (req, res, next) => {
     try {
         const { eventId, quantity, type } = req.body;
+
+        // search if a ticket with the same eventId and userId already exists
+        const ticketExists = await Ticket.findOne({
+            eventId,
+            userId: res.locals.authData._id,
+        });
+        if (ticketExists) {
+            return res.status(409).json({
+                error: {
+                    code: 409,
+                    message: "Conflicting request",
+                    details: "Ticket already exists",
+                },
+            });
+        }
 
         // check if the event exists
         const [isEventSuccess, event] = await getEventById(eventId, res, false);
