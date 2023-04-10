@@ -18,8 +18,8 @@ const TicketSchema = new mongoose.Schema(
         status: {
             type: String,
             required: true,
-            enum: ["created", "opened", "expired", "canceled", "completed"],
-            default: "created",
+            enum: ["open", "complete", "expired"],
+            default: "open",
         },
         sessionId: {
             type: String,
@@ -47,7 +47,7 @@ const TicketSchema = new mongoose.Schema(
         },
         payment_status: {
             type: String,
-            enum: ["succeeded", "failed", "canceled"],
+            enum: ["paid", "unpaid", "no_payment_required"],
         },
         session_url: {
             type: String,

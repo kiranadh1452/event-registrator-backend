@@ -34,16 +34,16 @@ const getTicketById = async (ticketId, res, hasToBeAdmin = true) => {
             ];
         }
 
-        const ticket = await Ticket.findById(ticketId).populate(
+        const ticket = await Ticket.findById(ticketId).populate([
             {
                 path: "userId",
                 select: "email firstName lastName",
             },
             {
                 path: "eventId",
-                select: "name",
-            }
-        );
+                select: "name description start_time end_time location",
+            },
+        ]);
         if (!ticket || Object.keys(ticket).length == 0) {
             return [
                 false,
@@ -239,7 +239,7 @@ export const createTicketController = async (req, res, next) => {
         const session = await createNewCheckoutSession(
             event.priceId,
             res.locals.authData._id,
-            (quantity = 1)
+            1 // for now, quantity is 1
         );
 
         const desiredData = getDesiredDataFromCheckoutSession(session);
@@ -259,6 +259,7 @@ export const createTicketController = async (req, res, next) => {
             data: savedTicket,
         });
     } catch (error) {
+        console.log(error);
         return res.status(500).json({
             error: {
                 code: 500,

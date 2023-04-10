@@ -17,18 +17,15 @@ ticketRouter.get("/test", (req, res) => {
     });
 });
 
+ticketRouter.use(userAuthenticatorForTicketsMiddleware);
 // GET all tickets
-ticketRouter.get("/tickets", ticketController.getTicketsController);
+ticketRouter.get("/", ticketController.getTicketsController);
 
 // POST a new ticket
-ticketRouter.post("/tickets", ticketController.createTicketController);
+ticketRouter.post("/", ticketController.createTicketController);
 
 // GET a specific ticket
-ticketRouter.get(
-    "/tickets/:id",
-    userAuthenticatorForTicketsMiddleware,
-    ticketController.getTicketByIdController
-);
+ticketRouter.get("/:id", ticketController.getTicketByIdController);
 
 // PUT update an existing ticket
 // What could be the use of letting the ticket to be edited by user?
@@ -39,10 +36,6 @@ ticketRouter.get(
 // );
 
 // DELETE a ticket
-ticketRouter.delete(
-    "/tickets/:id",
-    userAuthenticatorForTicketsMiddleware,
-    ticketController.deleteTicketController
-);
+ticketRouter.delete("/:id", ticketController.deleteTicketController);
 
 export default ticketRouter;
