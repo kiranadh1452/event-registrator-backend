@@ -322,6 +322,7 @@ export const getDesiredDataFromCheckoutSession = (checkoutSessionObj) => {
             // line_items,
             metadata,
             status,
+            url,
         } = checkoutSessionObj;
 
         // extracting the desired data from the checkout session object
@@ -330,15 +331,14 @@ export const getDesiredDataFromCheckoutSession = (checkoutSessionObj) => {
         const { amount_shipping, amount_discount, amount_tax } = total_details;
 
         return {
-            customerId,
             priceId,
             status,
-
             sessionId: id,
+            session_url: url,
             total_amount: amount_total,
             session_created: new Date(created * 1000),
             currency,
-            userId: customer,
+            userId: customer || customerId,
             email: customer_email || email,
             name,
             payment_intent,
