@@ -18,10 +18,16 @@ export const getEventById = async (eventId, res, hasToBeOwner = true) => {
             ];
         }
 
-        const event = await Event.findById(eventId).populate({
-            path: "organizer_id",
-            select: "-password -__v -created_at -updated_at",
-        });
+        const event = await Event.findById(eventId).populate([
+            {
+                path: "organizer_id",
+                select: "-password -__v -created_at -updated_at",
+            },
+            {
+                path: "event_type",
+                select: "-__v -created_at -updated_at",
+            },
+        ]);
         if (!event) {
             return [
                 false,
@@ -158,8 +164,11 @@ export const createEventController = async (req, res) => {
             price,
         } = req.body;
 
-        const { priceId, productId} =
-            await createNewProductAndPrice(name, description, price);
+        const { priceId, productId } = await createNewProductAndPrice(
+            name,
+            description,
+            price
+        );
 
         // create the new event
         const newEvent = new Event({
