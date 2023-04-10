@@ -1,0 +1,11 @@
+import * as ticketRouter from "./router.js";
+import * as ticketMiddleware from "./middleware.js";
+import * as ticketController from "./controller.js";
+
+const TicketModule = {
+    router: ticketRouter,
+    middleware: ticketMiddleware,
+    controller: ticketController,
+};
+
+export default TicketModule;
