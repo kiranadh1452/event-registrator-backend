@@ -31,7 +31,7 @@ const getEventTypeById = async (eventTypeId, res, hasToBeAdmin = false) => {
             ];
         }
 
-        if (hasToBeAdmin && !currentUser.isAdmin) {
+        if (hasToBeAdmin && !currentUser.is_admin) {
             return res.status(401).json({
                 error: {
                     code: 401,

@@ -23,7 +23,7 @@ const getTicketById = async (ticketId, res, hasToBeAdmin = true) => {
         }
 
         // if the requirement is to check if the user is admin or not, then check it
-        if (hasToBeAdmin && !currentUser.isAdmin) {
+        if (hasToBeAdmin && !currentUser.is_admin) {
             return [
                 false,
                 {
