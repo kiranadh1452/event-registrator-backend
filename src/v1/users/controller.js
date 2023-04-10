@@ -140,7 +140,7 @@ export const updateUserById = async (req, res, next) => {
             password,
             is_admin,
             dateOfBirth,
-        } = req.query;
+        } = req.body;
 
         const user = await User.findById(id).exec();
 
