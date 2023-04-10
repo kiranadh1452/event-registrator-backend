@@ -71,11 +71,17 @@ export const getAllEventTypesController = async (req, res, next) => {
         }
 
         if (created_at_before) {
-            query.created_at = { $lt: new Date(created_at_before) };
+            query.created_at = {
+                ...query.created_at,
+                $lt: new Date(created_at_before),
+            };
         }
 
         if (created_at_after) {
-            query.created_at = { $gt: new Date(created_at_after) };
+            query.created_at = {
+                ...query.created_at,
+                $gt: new Date(created_at_after),
+            };
         }
 
         if (created_by) {
