@@ -65,6 +65,17 @@ const stripeWebhookController = async (req, res) => {
                 // what to do on checkout-session failure
 
                 break;
+
+            case "checkout.session.expired":
+                const sessionExpired = event.data.object;
+
+                // get the formatted data from the checkout session object
+                const desiredDataExpired =
+                    getDesiredDataFromCheckoutSession(sessionExpired);
+
+                // TODO: delete the session data from the database
+
+                break;
         }
 
         // Return a response to acknowledge receipt of the event
