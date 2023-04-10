@@ -3,7 +3,7 @@ import { createNewProductAndPrice } from "../stripe-handler/stripeHandler.js";
 
 // helper functions to reduce the code in the controller functions
 
-const getEventById = async (eventId, res, hasToBeOwner = true) => {
+export const getEventById = async (eventId, res, hasToBeOwner = true) => {
     try {
         const currentUserId = res.locals.authData._id;
 
