@@ -31,11 +31,12 @@ ticketRouter.get(
 );
 
 // PUT update an existing ticket
-ticketRouter.put(
-    "/tickets/:id",
-    userAuthenticatorForTicketsMiddleware,
-    ticketController.updateTicketController
-);
+// What could be the use of letting the ticket to be edited by user?
+// ticketRouter.put(
+//     "/tickets/:id",
+//     userAuthenticatorForTicketsMiddleware,
+//     ticketController.updateTicketController
+// );
 
 // DELETE a ticket
 ticketRouter.delete(
