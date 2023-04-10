@@ -3,6 +3,30 @@ import {
     getDesiredDataFromCheckoutSession,
 } from "./stripeHandler.js";
 
+// importing Ticket model
+import Ticket from "../tickets/model.js";
+
+/**
+ * description: This function is used by the webhook controller upon completion or expiration of a checkout session to update the ticket
+ */
+const onSessionCompleteController = async (desiredData) => {
+    try {
+        const { sessionId } = desiredData;
+
+        // get the ticket by sessionId
+        const ticket = await Ticket.find({ session_id: sessionId });
+
+        // if the ticket exists, update the ticket with the desired data props
+        if (ticket) {
+            await Ticket.findByIdAndUpdate(ticket._id, desiredData);
+        }
+
+        return true;
+    } catch (error) {
+        return false;
+    }
+};
+
 /**
  * description: this function is used to handle stripe webhook events
  */
@@ -50,30 +74,23 @@ const stripeWebhookController = async (req, res) => {
 
                 break;
 
+            case "checkout.session.expired":
             case "checkout.session.completed":
+            case "checkout.session.async_payment_failed":
                 const session = event.data.object;
 
                 // get the formatted data from the checkout session object
                 const desiredData = getDesiredDataFromCheckoutSession(session);
 
-                // TODO: save the data to the database
+                // save the data to the database
+                const ticketUpdated = await onSessionCompleteController(
+                    desiredData
+                );
 
-                break;
-
-            case "checkout.session.async_payment_failed":
-                const sessionFailed = event.data.object;
-                // what to do on checkout-session failure
-
-                break;
-
-            case "checkout.session.expired":
-                const sessionExpired = event.data.object;
-
-                // get the formatted data from the checkout session object
-                const desiredDataExpired =
-                    getDesiredDataFromCheckoutSession(sessionExpired);
-
-                // TODO: delete the session data from the database
+                // if the ticket is not updated, then return an error
+                if (!ticketUpdated) {
+                    return res.status(400).send("Error: Ticket not updated");
+                }
 
                 break;
         }
