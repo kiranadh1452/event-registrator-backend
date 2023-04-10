@@ -106,21 +106,25 @@ export const getTicketsController = async (req, res, next) => {
         }
         if (session_created_before) {
             filter.session_created = {
+                ...filter.session_created,
                 $lt: new Date(session_created_before),
             };
         }
         if (session_created_after) {
             filter.session_created = {
+                ...filter.session_created,
                 $gt: new Date(session_created_after),
             };
         }
         if (total_amount_min) {
             filter.total_amount = {
+                ...filter.total_amount,
                 $gte: total_amount_min,
             };
         }
         if (total_amount_max) {
             filter.total_amount = {
+                ...filter.total_amount,
                 $lte: total_amount_max,
             };
         }
