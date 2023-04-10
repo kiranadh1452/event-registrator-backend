@@ -285,19 +285,6 @@ export const createTicketController = async (req, res, next) => {
     }
 };
 
-// export const updateTicketController = async (req, res, next) => {
-//     try {
-//     } catch (error) {
-//         return res.status(500).json({
-//             error: {
-//                 code: 500,
-//                 message: "Internal Server Error",
-//                 details: error.message,
-//             },
-//         });
-//     }
-// };
-
 /**
  * description: Function to delete a ticket by id
  */

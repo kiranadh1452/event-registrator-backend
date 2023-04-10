@@ -1,7 +1,10 @@
 import express from "express";
 
 // Import middleware here
-import { userAuthenticatorForEventsMiddleware } from "./middleware.js";
+import {
+    userAuthenticatorForEventsMiddleware,
+    isCurrentUserEventOrganizer,
+} from "./middleware.js";
 
 // Import the event controller here
 import * as eventsController from "./controller.js";
@@ -29,9 +32,17 @@ router.post("/", eventsController.createEventController);
 router.get("/:id", eventsController.getEventByIdController);
 
 // PUT update an existing event by ID
-router.put("/:id", eventsController.updateEventByIdController);
+router.put(
+    "/:id",
+    isCurrentUserEventOrganizer,
+    eventsController.updateEventByIdController
+);
 
 // DELETE an existing event by ID
-router.delete("/:id", eventsController.deleteEventByIdController);
+router.delete(
+    "/:id",
+    isCurrentUserEventOrganizer,
+    eventsController.deleteEventByIdController
+);
 
 export default router;

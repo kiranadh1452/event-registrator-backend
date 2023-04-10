@@ -1,7 +1,7 @@
 import EventType from "./model.js";
 
 // This is just a helper function to reduce the code in the controller functions
-const getEventTypeById = async (eventTypeId, res, hasToBeAdmin = false) => {
+const getEventTypeById = async (eventTypeId, res, hasToBeAdmin = true) => {
     try {
         const currentUser = res.locals.authData;
 
@@ -145,7 +145,7 @@ export const getEventTypeByIdController = async (req, res, next) => {
     try {
         const { id } = req.params;
 
-        const [success, eventType] = await getEventTypeById(id, res);
+        const [success, eventType] = await getEventTypeById(id, res, false);
         if (!success) {
             return res.status(eventType.code).json({
                 error: eventType,
