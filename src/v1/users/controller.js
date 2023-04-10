@@ -105,9 +105,16 @@ export const createUser = async (req, res, next) => {
             await addNewCustomer(user._id.toString(), user.email);
         } catch (error) {
             console.log("Stripe customer creation failed");
-            throw new Error(
-                `User created successfully with id ${user._id} but stripe customer creation failed : ${error.message}`
-            );
+
+            return res.status(500).json({
+                error: {
+                    code: 500,
+                    message: "Internal Server Error",
+                    details:
+                        "User created only in database. Stripe customer creation failed",
+                    user,
+                },
+            });
         }
 
         return res.status(201).json({
