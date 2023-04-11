@@ -43,6 +43,7 @@ export const isCurrentUserEventOrganizer = async (req, res, next) => {
             });
         }
 
+        // check if the current user is the organizer of the event
         if (event.organizer_id._id.toString() !== res.locals.authData._id) {
             return res.status(401).json({
                 error: {

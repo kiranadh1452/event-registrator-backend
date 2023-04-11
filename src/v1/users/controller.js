@@ -2,9 +2,10 @@ import jwt from "jsonwebtoken";
 import User from "./model.js";
 import { addNewCustomer } from "../stripe-handler/stripeHandler.js";
 
-// Get all users
+// Get all users controller
 export const getAllUsers = async (req, res, next) => {
     try {
+        // fetch the query parameters
         const {
             first_name,
             email,
@@ -15,6 +16,7 @@ export const getAllUsers = async (req, res, next) => {
 
         const query = {};
 
+        // formulate the query object based on the query parameters
         if (first_name) query.firstName = { $regex: first_name, $options: "i" };
         if (email) query.email = { $regex: email, $options: "i" };
         if (created_at_before) query.created_at = { $lte: created_at_before };
@@ -44,6 +46,7 @@ export const getUserById = async (req, res, next) => {
     try {
         const { id } = req.params;
 
+        // search for the user by Id and if not found return 404
         const user = await User.findById(id, { password: 0, __v: 0 }).exec();
 
         if (!user) {
@@ -86,6 +89,19 @@ export const createUser = async (req, res, next) => {
             dateOfBirth,
         } = req.body;
 
+        // check if user already exists and return 409 if true
+        const userExists = await User.find({ email });
+
+        if (userExists && Object.keys(userExists).length > 0) {
+            return res.status(409).json({
+                error: {
+                    code: 409,
+                    message: "User already exists",
+                },
+            });
+        }
+
+        // create a new user
         const user = new User({
             email,
             firstName,
@@ -100,7 +116,7 @@ export const createUser = async (req, res, next) => {
 
         await user.save();
 
-        // create stripe customer
+        // create stripe customer for the user
         try {
             await addNewCustomer(user._id.toString(), user.email);
         } catch (error) {
@@ -136,6 +152,7 @@ export const createUser = async (req, res, next) => {
 // Update a user by ID
 export const updateUserById = async (req, res, next) => {
     try {
+        // get the user id from the request params and update values from request body
         const { id } = req.params;
         const {
             email,
@@ -181,6 +198,7 @@ export const updateUserById = async (req, res, next) => {
 
         await user.save();
 
+        // remove password and __v from the user object before sending the response
         const userObj = user.toObject();
         delete userObj.password;
         delete userObj.__v;
@@ -201,11 +219,13 @@ export const updateUserById = async (req, res, next) => {
     }
 };
 
+// Delete a user by ID
 export const deleteUserById = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { keep_events = false, keep_tickets = false } = req.query;
 
+        // search for the user by Id and if not found return 404
         const user = await User.findById(id).exec();
 
         if (!user) {
@@ -246,8 +266,10 @@ export const deleteUserById = async (req, res, next) => {
 // login user
 export const loginUser = async (req, res, next) => {
     try {
+        // get email and password from request body
         const { email, password } = req.body;
 
+        // check if user exists and return 404 if not
         const user = await User.findOne({ email: email });
 
         if (!user) {
@@ -260,6 +282,7 @@ export const loginUser = async (req, res, next) => {
             });
         }
 
+        // verify password and return 401 if not valid
         const passwordMatch = await user.authentication(password);
 
         if (!passwordMatch) {
@@ -275,6 +298,7 @@ export const loginUser = async (req, res, next) => {
         delete userObj.password;
         delete userObj.__v;
 
+        // generate an access token and return it
         const token = await jwt.sign({ ...userObj }, process.env.JWT_SECRET, {
             expiresIn: "1h",
         });

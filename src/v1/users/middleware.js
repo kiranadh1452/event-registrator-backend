@@ -1,5 +1,8 @@
 import jwt from "jsonwebtoken";
 
+/**
+ * description: This middleware is responsible for authenticating the user
+ */
 export const userAuthenticatorMiddleware = async (req, res, next) => {
     try {
         if (!req.headers.authorization) {
@@ -48,10 +51,17 @@ export const userAuthenticatorMiddleware = async (req, res, next) => {
     }
 };
 
+/**
+ * description: This middleware will check if the requested user is the currently logged in user
+ * @Usage : This middleware should be used after the userAuthenticatorMiddleware
+ * @Usecase : To verify that the user being updated / deleted is the currently logged in user
+ */
 export const isCurrentUser = async (req, res, next) => {
     try {
-        const { id } = req.params;
+        // get the id from the request object
+        const id = req.params?.id || req.query?.id;
 
+        // if the id doesnot match the id of the currently logged in user, return 401
         if (id !== res.locals.authData._id) {
             return res.status(401).json({
                 error: {
