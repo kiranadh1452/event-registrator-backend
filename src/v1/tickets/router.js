@@ -31,6 +31,9 @@ ticketRouter.get("/:id", ticketController.getTicketByIdController);
 // What could be the use of letting the ticket to be edited by user?
 
 // DELETE a ticket
-ticketRouter.delete("/:id", ticketController.deleteTicketController);
+// This endpoint should not be available to anyone, not even the admin for security reasons
+// The only case where a ticket might be deleted is when the event is cancelled or the ticket is expired
+// Stripe webhook handles the ticket deletion on expiry so this endpoint might not be required
+// ticketRouter.delete("/:id", ticketController.deleteTicketController);
 
 export default ticketRouter;
