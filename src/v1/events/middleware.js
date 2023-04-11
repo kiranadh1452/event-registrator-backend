@@ -9,7 +9,21 @@ export const userAuthenticatorForEventsMiddleware = userAuthenticatorMiddleware;
 export const isCurrentUserEventOrganizer = async (req, res, next) => {
     try {
         let id = req.params?.id || req.query?.id || req.body?.id;
+        isEventOrganizer(id, res, next);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error: {
+                status: 500,
+                message: "Internal Server Error",
+                details: error.message,
+            },
+        });
+    }
+};
 
+export const isEventOrganizer = async (id, res, next) => {
+    try {
         if (!id || !res.locals.authData) {
             return res.status(400).json({
                 error: {
