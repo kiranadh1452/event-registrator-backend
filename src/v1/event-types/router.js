@@ -17,6 +17,7 @@ eventTypeRouter.get("/test", (req, res) => {
     });
 });
 
+// For all routes below this, the user must be authenticated
 eventTypeRouter.use(
     eventTypesMiddleware.userAuthenticatorForEventTypesMiddleware
 );

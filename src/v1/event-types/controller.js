@@ -1,21 +1,41 @@
 import EventType from "./model.js";
 
-// This is just a helper function to reduce the code in the controller functions
+/**
+ * description: This is just a helper function to reduce the code in the controller functions
+ * @param {String} eventTypeId - The ID of the event type
+ * @param {Object} res - The response object
+ * @param {Boolean} hasToBeAdmin - If the user has to be an admin to access the event type
+ * @returns {Array} - An array with two elements. The first element is a boolean value indicating if the operation was successful or not.
+ * The second element is either the event type object or an error object
+ */
 const getEventTypeById = async (eventTypeId, res, hasToBeAdmin = true) => {
     try {
         const currentUser = res.locals.authData;
 
+        // if the user is not authenticated or the event type ID is not present, return an error
         if (!eventTypeId || Object.keys(currentUser).length == 0) {
             return [
                 false,
                 {
                     code: 400,
                     message: "Bad Request",
-                    details: "Invalid ID",
+                    details: "Missing ID",
                 },
             ];
         }
 
+        // if the user is not an admin and the event type has to be accessed by an admin, return an error
+        if (hasToBeAdmin && !currentUser.is_admin) {
+            return res.status(401).json({
+                error: {
+                    code: 401,
+                    message: "Unauthorized",
+                    details: "Access Denied",
+                },
+            });
+        }
+
+        // get the event type from the database and if it doesn't exist, return an error
         const eventType = await EventType.findById(eventTypeId).populate({
             path: "created_by",
             select: "email firstName lastName",
@@ -29,16 +49,6 @@ const getEventTypeById = async (eventTypeId, res, hasToBeAdmin = true) => {
                     details: "Event Type not found",
                 },
             ];
-        }
-
-        if (hasToBeAdmin && !currentUser.is_admin) {
-            return res.status(401).json({
-                error: {
-                    code: 401,
-                    message: "Unauthorized",
-                    details: "Access Denied",
-                },
-            });
         }
 
         return [true, eventType];
@@ -58,36 +68,41 @@ const getEventTypeById = async (eventTypeId, res, hasToBeAdmin = true) => {
 // get all event types
 export const getAllEventTypesController = async (req, res, next) => {
     try {
+        // get the query parameters
         const { search, created_at_before, created_at_after, created_by } =
             req.query;
 
         let query = {};
 
-        if (search) {
-            query.$or = [
-                { name: { $regex: search, $options: "i" } },
-                { description: { $regex: search, $options: "i" } },
-            ];
+        // formulate the query object based on the query parameters
+        {
+            if (search) {
+                query.$or = [
+                    { name: { $regex: search, $options: "i" } },
+                    { description: { $regex: search, $options: "i" } },
+                ];
+            }
+
+            if (created_at_before) {
+                query.created_at = {
+                    ...query.created_at,
+                    $lt: new Date(created_at_before),
+                };
+            }
+
+            if (created_at_after) {
+                query.created_at = {
+                    ...query.created_at,
+                    $gt: new Date(created_at_after),
+                };
+            }
+
+            if (created_by) {
+                query.created_by = created_by;
+            }
         }
 
-        if (created_at_before) {
-            query.created_at = {
-                ...query.created_at,
-                $lt: new Date(created_at_before),
-            };
-        }
-
-        if (created_at_after) {
-            query.created_at = {
-                ...query.created_at,
-                $gt: new Date(created_at_after),
-            };
-        }
-
-        if (created_by) {
-            query.created_by = created_by;
-        }
-
+        // get the event types from the database
         const eventTypes = await EventType.find(query).populate({
             path: "created_by",
             select: "email firstName lastName",
@@ -113,6 +128,9 @@ export const getAllEventTypesController = async (req, res, next) => {
 export const createEventTypeController = async (req, res, next) => {
     try {
         const { name, description } = req.body;
+
+        // why no checks for duplicate event types?
+        // Because the database is auto handling that during save
 
         // create the new event
         const newEventType = new EventType({
@@ -145,6 +163,7 @@ export const getEventTypeByIdController = async (req, res, next) => {
     try {
         const { id } = req.params;
 
+        // get the event type from the database and if it doesn't exist, return an error
         const [success, eventType] = await getEventTypeById(id, res, false);
         if (!success) {
             return res.status(eventType.code).json({
@@ -168,11 +187,13 @@ export const getEventTypeByIdController = async (req, res, next) => {
     }
 };
 
+// update a specific event type by ID
 export const updateEventTypeByIdController = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { name, description } = req.body;
 
+        // get the event type from the database and if it doesn't exist, return an error
         const [success, eventType] = await getEventTypeById(id, res);
 
         if (!success) {
@@ -213,6 +234,7 @@ export const deleteEventTypeByIdController = async (req, res, next) => {
     try {
         const { id } = req.params;
 
+        // get the event type from the database and if it doesn't exist, return an error
         const [success, eventType] = await getEventTypeById(id, res);
         if (!success) {
             return res.status(eventType.code).json({
