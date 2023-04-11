@@ -90,51 +90,54 @@ export const getAllEventsController = async (req, res) => {
 
         let filters = {};
 
-        if (search) {
-            filters["$or"] = [
-                { name: { $regex: search, $options: "i" } },
-                { description: { $regex: search, $options: "i" } },
-            ];
-        }
+        // if any of the query params is present, then add it to the filters object
+        {
+            if (search) {
+                filters["$or"] = [
+                    { name: { $regex: search, $options: "i" } },
+                    { description: { $regex: search, $options: "i" } },
+                ];
+            }
 
-        if (organizer_id) {
-            filters["organizer_id"] = organizer_id;
-        }
+            if (organizer_id) {
+                filters["organizer_id"] = organizer_id;
+            }
 
-        if (created_at_before) {
-            filters["created_at"] = {
-                ...filters["created_at"],
-                $lt: new Date(created_at_before),
-            };
-        }
+            if (created_at_before) {
+                filters["created_at"] = {
+                    ...filters["created_at"],
+                    $lt: new Date(created_at_before),
+                };
+            }
 
-        if (created_at_after) {
-            filters["created_at"] = {
-                ...filters["created_at"],
-                $gte: new Date(created_at_after),
-            };
-        }
+            if (created_at_after) {
+                filters["created_at"] = {
+                    ...filters["created_at"],
+                    $gte: new Date(created_at_after),
+                };
+            }
 
-        if (start_time_after) {
-            filters["start_time"] = {
-                ...filters["start_time"],
-                $gte: new Date(start_time_after),
-            };
-        }
+            if (start_time_after) {
+                filters["start_time"] = {
+                    ...filters["start_time"],
+                    $gte: new Date(start_time_after),
+                };
+            }
 
-        if (end_time_before) {
-            filters["end_time"] = {
-                ...filters["end_time"],
-                $lt: new Date(end_time_before),
-            };
-        }
+            if (end_time_before) {
+                filters["end_time"] = {
+                    ...filters["end_time"],
+                    $lt: new Date(end_time_before),
+                };
+            }
 
-        if (location) {
-            filters["location"] = { $regex: location, $options: "i" };
-        }
+            if (location) {
+                filters["location"] = { $regex: location, $options: "i" };
+            }
 
-        if (event_type) {
-            filters["event_type"] = event_type;
+            if (event_type) {
+                filters["event_type"] = event_type;
+            }
         }
 
         const events = await Event.find(filters).populate({
@@ -172,6 +175,7 @@ export const createEventController = async (req, res) => {
             price,
         } = req.body;
 
+        // create a new product and price in stripe
         const { priceId, productId } = await createNewProductAndPrice(
             name,
             description,
@@ -217,6 +221,7 @@ export const getEventByIdController = async (req, res) => {
     try {
         const { id } = req.params;
 
+        // get the event by id and if there are some issues, then return the error
         const [success, event] = await getEventById(id, res);
         if (!success) {
             return res.status(event.code || 404).json({

@@ -18,7 +18,7 @@ const onSessionCompleteController = async (desiredData) => {
 
         // if the ticket exists, update the ticket with the desired data props
         if (ticket) {
-            // if the session is expired, delete the ticket
+            // if the session is expired and payment status is unpaid, delete the ticket and return true
             if (status == "expired" && payment_status == "unpaid") {
                 // delete the ticket
                 await Ticket.deleteOne({ sessionId: sessionId });
@@ -26,6 +26,7 @@ const onSessionCompleteController = async (desiredData) => {
                 return true;
             }
 
+            // update the ticket if the session is completed
             await Ticket.updateOne(
                 { sessionId: sessionId },
                 {
@@ -62,6 +63,7 @@ const stripeWebhookController = async (req, res) => {
             console.log(`Event type: ${event.type}`);
         } catch (error) {
             console.log(`Could not create webhook due to: ${error.message}`);
+            // This response is sent back to Stripe to let there was an error while attempting to create the webhook
             return res.status(400).send(`Webhook Error: ${error.message}`);
         }
 
