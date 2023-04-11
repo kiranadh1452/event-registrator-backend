@@ -18,16 +18,24 @@ export const getEventById = async (eventId, res, hasToBeOwner = true) => {
             ];
         }
 
-        const event = await Event.findById(eventId).populate([
-            {
-                path: "organizer_id",
-                select: "-password -__v -created_at -updated_at",
-            },
-            {
-                path: "event_type",
-                select: "-__v -created_at -updated_at",
-            },
-        ]);
+        // check if res.locals.current_event is present or not (The middleware "isCurrentUserEventOrganizer" will set this)
+        // if it is present, then check the id of the event and return it
+        // else fetch from database
+        const event =
+            res.locals?.current_event &&
+            res.locals?.current_event._id?.toString() == eventId
+                ? res.locals.current_event
+                : await Event.findById(eventId).populate([
+                      {
+                          path: "organizer_id",
+                          select: "-password -__v -created_at -updated_at",
+                      },
+                      {
+                          path: "event_type",
+                          select: "-__v -created_at -updated_at",
+                      },
+                  ]);
+
         if (!event) {
             return [
                 false,

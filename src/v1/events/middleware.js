@@ -34,8 +34,6 @@ export const isCurrentUserEventOrganizer = async (req, res, next) => {
             });
         }
 
-        // TODO: Try to see if we can pass on this event into the controller itself so that we can avoid one fetch operation extra
-
         if (event.organizer_id.toString() !== res.locals.authData._id) {
             return res.status(401).json({
                 error: {
@@ -44,6 +42,9 @@ export const isCurrentUserEventOrganizer = async (req, res, next) => {
                 },
             });
         }
+
+        // Note that res.locals.current_event is a mongoose object which means we can perform actions like res.locals.current_event.save(), etc.
+        res.locals.current_event = event;
 
         next();
     } catch (error) {
