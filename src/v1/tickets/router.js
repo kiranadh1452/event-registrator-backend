@@ -4,7 +4,10 @@ import express from "express";
 import * as ticketController from "./controller.js";
 
 // Import the middleware here
-import { userAuthenticatorForTicketsMiddleware } from "./middleware.js";
+import {
+    userAuthenticatorForTicketsMiddleware,
+    isEventOwnedByUserMiddleware,
+} from "./middleware.js";
 
 const ticketRouter = express.Router();
 
@@ -31,6 +34,10 @@ ticketRouter.get("/:id", ticketController.getTicketByIdController);
 // What could be the use of letting the ticket to be edited by user?
 
 // DELETE a ticket
-ticketRouter.delete("/:id", ticketController.deleteTicketController);
+ticketRouter.delete(
+    "/:id",
+    isEventOwnedByUserMiddleware,
+    ticketController.deleteTicketController
+);
 
 export default ticketRouter;
