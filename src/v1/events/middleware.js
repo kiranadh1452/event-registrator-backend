@@ -21,7 +21,16 @@ export const isCurrentUserEventOrganizer = async (req, res, next) => {
         }
 
         // find the event by id
-        const event = await Event.findById(id);
+        const event = await Event.findById(id).populate([
+            {
+                path: "organizer_id",
+                select: "-password -__v -created_at -updated_at",
+            },
+            {
+                path: "event_type",
+                select: "-__v -created_at -updated_at",
+            },
+        ]);
 
         // if no event found, return 404
         if (!event) {
@@ -34,7 +43,7 @@ export const isCurrentUserEventOrganizer = async (req, res, next) => {
             });
         }
 
-        if (event.organizer_id.toString() !== res.locals.authData._id) {
+        if (event.organizer_id._id.toString() !== res.locals.authData._id) {
             return res.status(401).json({
                 error: {
                     status: 401,
