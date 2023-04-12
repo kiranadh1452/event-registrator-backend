@@ -1,0 +1,23 @@
+## Provide a value for fields below before running the application
+## After that, rename the file to `config.env` and run the application
+
+# Port number
+PORT=3030
+
+MODE="dev"
+
+# JWT Secret - This would be used to sign and verify the JWT token for authentication
+JWT_SECRET=""
+
+# mongo db connection url - This would be used to connect to the mongo db database
+MONGO_URI_ONLINE=mongodb://localhost:27017/testing
+MONGO_URI_OFFLINE=mongodb://localhost:27017/testing
+
+# Stripe API Key - This would be used to connect to the stripe API 
+STRIPE_SECRET_KEY=""
+
+# Stripe Webhook Secret - This would be used to verify the stripe webhook
+STRIPE_WEBHOOK_SECRET=""
+
+# Stripe success url - This would be used to redirect the user to the success page after payment
+SUCCESS_URL_PAYMENT=""
