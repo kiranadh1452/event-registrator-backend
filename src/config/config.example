@@ -10,6 +10,8 @@ MODE="dev"
 JWT_SECRET=""
 
 # mongo db connection url - This would be used to connect to the mongo db database
+# If you are running the application through docker, then no need to use the following two variables.
+# Delete the two lines below if you are running the application through docker.
 MONGO_URI_ONLINE=mongodb://localhost:27017/testing
 MONGO_URI_OFFLINE=mongodb://localhost:27017/testing
 

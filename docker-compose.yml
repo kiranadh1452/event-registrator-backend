@@ -16,7 +16,7 @@ services:
             - ./database/production:/Databases/production
 
     event-registration:
-        image: kiranadh1452/event-registration
+        image: ev-reg-back
         container_name: backend
         environment:
             - MONGO_URI_ONLINE=mongodb://root:password@mongo:27017/?authSource=admin
