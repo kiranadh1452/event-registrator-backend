@@ -284,7 +284,7 @@ export const updateEventByIdController = async (req, res) => {
 
         // create a new price in stripe if the price has changed
         if (price !== event.price) {
-            const priceObj = await createNewPrice(event.productId, price);
+            const priceObj = await createNewPrice(event.productId, price * 100);
             event.priceId = priceObj.id;
             event.oldPriceIds = [...event.oldPriceIds, event.priceId];
         }
