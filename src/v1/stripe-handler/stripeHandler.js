@@ -179,6 +179,11 @@ export const createNewProductAndPrice = async (
             // if there is a price for the product, use it || else create a new one
             if (prices.data.length > 0) {
                 price = prices.data[0];
+
+                // if the object is empty or the price is not equal to the event price, create a new price
+                if (!price || price.unit_amount !== eventPrice) {
+                    price = await createNewPrice(product.id, eventPrice);
+                }
             } else {
                 // create a price for the product
                 price = await createNewPrice(product.id, eventPrice);

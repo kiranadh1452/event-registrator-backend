@@ -1,5 +1,8 @@
 import Event from "./model.js";
-import { createNewProductAndPrice } from "../stripe-handler/stripeHandler.js";
+import {
+    createNewProductAndPrice,
+    createNewPrice,
+} from "../stripe-handler/stripeHandler.js";
 
 // helper functions to reduce the code in the controller functions
 
@@ -200,6 +203,7 @@ export const createEventController = async (req, res) => {
             emergency_contact,
             image,
             event_type,
+            oldPriceIds: [priceId],
             organizer_id: res.locals.authData._id,
         });
 
@@ -273,6 +277,13 @@ export const updateEventByIdController = async (req, res) => {
             return res.status(event.code || 404).json({
                 error: event,
             });
+        }
+
+        // create a new price in stripe if the price has changed
+        if (price !== event.price) {
+            const priceObj = await createNewPrice(event.productId, price);
+            event.priceId = priceObj.id;
+            event.oldPriceIds = [...event.oldPriceIds, event.priceId];
         }
 
         // update the event

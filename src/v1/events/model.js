@@ -9,6 +9,10 @@ const eventSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    oldPriceIds: {
+        type: [String],
+        default: [],
+    },
     name: {
         type: String,
         required: true,
