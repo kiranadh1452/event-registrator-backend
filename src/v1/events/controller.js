@@ -203,7 +203,7 @@ export const createEventController = async (req, res) => {
             emergency_contact,
             image,
             event_type,
-            oldPriceIds: [priceId],
+            oldPriceIds: [priceId], // TODO: check this if it is working or not
             organizer_id: res.locals.authData._id,
         });
 
@@ -279,7 +279,7 @@ export const updateEventByIdController = async (req, res) => {
             });
         }
 
-        // create a new price in stripe if the price has changed
+        // create a new price in stripe if the price has changed // TODO: check this if it is working or not
         if (price !== event.price) {
             const priceObj = await createNewPrice(event.productId, price);
             event.priceId = priceObj.id;
@@ -338,7 +338,7 @@ export const deleteEventByIdController = async (req, res) => {
             });
         }
 
-        // TODO: Does any of the other data need to be deleted when event is deleted?
+        // TODO: Does any of the other data need to be deleted when event is deleted ?
 
         await Event.findByIdAndDelete(id);
 
