@@ -16,7 +16,6 @@ const eventSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
         trim: true,
         index: "text",
     },

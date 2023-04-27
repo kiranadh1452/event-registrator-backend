@@ -137,6 +137,7 @@ export const createNewCheckoutSession = async (
  * @param {number} eventPrice - price of the event
  */
 export const createNewProductAndPrice = async (
+    productIdToBeUsed,
     eventName,
     eventDescription,
     eventPrice
@@ -149,10 +150,7 @@ export const createNewProductAndPrice = async (
         let product = null;
         let newlyCreatedProduct = true;
 
-        const productId = crypto
-            .createHash("sha256")
-            .update(eventName)
-            .digest("hex");
+        const productId = productIdToBeUsed;
 
         // search if there is a product, else create a new one
         try {

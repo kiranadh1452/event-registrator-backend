@@ -181,18 +181,9 @@ export const createEventController = async (req, res) => {
             emergency_contact,
         } = req.body;
 
-        // create a new product and price in stripe
-        const { priceId, productId } = await createNewProductAndPrice(
-            name,
-            description,
-            price
-        );
-
         // create the new event
         const newEvent = new Event({
             name,
-            productId,
-            priceId,
             price,
             description,
             start_time,
@@ -206,6 +197,18 @@ export const createEventController = async (req, res) => {
             oldPriceIds: [priceId], // TODO: check this if it is working or not
             organizer_id: res.locals.authData._id,
         });
+
+        // create a new product and price in stripe  // TODO: check this if it is working or not
+        const { priceId, productId } = await createNewProductAndPrice(
+            `${newEvent._id.toString()}_${newEvent.created_at.valueOf()}_organizer_${organizer_id.toString()}`, // this would be the product id
+            name,
+            description,
+            price
+        );
+
+        // add the priceId and productId to the event
+        newEvent.priceId = priceId;
+        newEvent.productId = productId;
 
         // save the new event to the database
         await newEvent.save();
