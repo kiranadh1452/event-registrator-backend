@@ -63,6 +63,15 @@ const eventSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    max_age: {
+        type: Number,
+    },
+    min_age: {
+        type: Number,
+    },
+    emergency_contact: {
+        type: String,
+    },
     event_type: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "EventType",

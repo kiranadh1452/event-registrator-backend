@@ -173,6 +173,9 @@ export const createEventController = async (req, res) => {
             image,
             event_type,
             price,
+            min_age,
+            max_age,
+            emergency_contact,
         } = req.body;
 
         // create a new product and price in stripe
@@ -192,6 +195,9 @@ export const createEventController = async (req, res) => {
             start_time,
             end_time,
             location,
+            min_age,
+            max_age,
+            emergency_contact,
             image,
             event_type,
             organizer_id: res.locals.authData._id,
@@ -257,6 +263,9 @@ export const updateEventByIdController = async (req, res) => {
             image,
             event_type,
             price,
+            min_age,
+            max_age,
+            emergency_contact,
         } = req.body;
 
         const [success, event] = await getEventById(id, res);
@@ -275,6 +284,9 @@ export const updateEventByIdController = async (req, res) => {
             image,
             event_type,
             price,
+            min_age,
+            max_age,
+            emergency_contact,
         };
         Object.keys(propsToUpdate).forEach((key) => {
             if (propsToUpdate[key]) {
@@ -284,6 +296,8 @@ export const updateEventByIdController = async (req, res) => {
 
         // save the updated event to the database
         await event.save();
+
+        // TODO: Update the product and price in stripe
 
         return res.status(200).json({
             code: 200,
