@@ -1,9 +1,10 @@
 import Event from "./model.js";
-import { userAuthenticatorMiddleware } from "../users/middleware.js";
+import UserModule from "../users";
 
 // for now, lets reuse the userAuthenticatorMiddleware
 // but since we are doing everything modular, having a separate middleware for events is a good idea
-export const userAuthenticatorForEventsMiddleware = userAuthenticatorMiddleware;
+export const userAuthenticatorForEventsMiddleware =
+    UserModule.middleware.userAuthenticatorMiddleware;
 
 // this middleware will check if the user is the organizer of the event
 export const isCurrentUserEventOrganizer = async (req, res, next) => {
