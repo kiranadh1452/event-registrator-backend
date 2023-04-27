@@ -194,13 +194,12 @@ export const createEventController = async (req, res) => {
             emergency_contact,
             image,
             event_type,
-            oldPriceIds: [priceId], // TODO: check this if it is working or not
             organizer_id: res.locals.authData._id,
         });
 
-        // create a new product and price in stripe  // TODO: check this if it is working or not
+        // create a new product and price in stripe
         const { priceId, productId } = await createNewProductAndPrice(
-            `${newEvent._id.toString()}_${newEvent.created_at.valueOf()}_organizer_${organizer_id.toString()}`, // this would be the product id
+            `${newEvent._id.toString()}_${newEvent.created_at.valueOf()}_organizer_${newEvent.organizer_id.toString()}`, // this would be the product id
             name,
             description,
             price
@@ -209,6 +208,7 @@ export const createEventController = async (req, res) => {
         // add the priceId and productId to the event
         newEvent.priceId = priceId;
         newEvent.productId = productId;
+        newEvent.oldPriceIds.push(priceId);
 
         // save the new event to the database
         await newEvent.save();
@@ -282,7 +282,7 @@ export const updateEventByIdController = async (req, res) => {
             });
         }
 
-        // create a new price in stripe if the price has changed // TODO: check this if it is working or not
+        // create a new price in stripe if the price has changed
         if (price !== event.price) {
             const priceObj = await createNewPrice(event.productId, price);
             event.priceId = priceObj.id;
@@ -310,8 +310,6 @@ export const updateEventByIdController = async (req, res) => {
 
         // save the updated event to the database
         await event.save();
-
-        // TODO: Update the product and price in stripe
 
         return res.status(200).json({
             code: 200,
