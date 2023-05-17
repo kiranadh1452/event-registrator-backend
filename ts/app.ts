@@ -3,6 +3,9 @@ import * as dotenv from "dotenv";
 import bodyParser from "body-parser";
 import express, { Express, Request, Response, NextFunction } from "express";
 
+// import database connection
+import connectDB from "./src/config/db.js";
+
 // import the routes
 import UserRouter from "./src/v1/users/router.js";
 import EventRouter from "./src/v1/events/router.js";
@@ -13,6 +16,9 @@ import EventTypeRouter from "./src/v1/event-types/router.js";
 dotenv.config({
     path: "./src/config/config.env",
 });
+
+// connect to the database
+connectDB();
 
 // creating and configuring the app
 const port = process.env.PORT || 8000;

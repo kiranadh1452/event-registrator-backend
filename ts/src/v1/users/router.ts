@@ -1,5 +1,8 @@
 import express, { Request, Response, Router } from "express";
 
+// import controllers
+import { getAllUsers, createUser } from "./controller.js";
+
 const UserRouter: Router = express.Router();
 
 // This is a test endpoint
@@ -11,5 +14,10 @@ UserRouter.get("/test", (req: Request, res: Response) => {
     });
 });
 
+// create a user
+UserRouter.post("/", createUser);
+
+// get all users
+UserRouter.get("/", getAllUsers);
+
 export default UserRouter;
-    
