@@ -9,7 +9,9 @@
         "copy-config": "mkdir -p ./build/src/ && cp -r ./src/config ./build/src/",
         "start": "node build/app.js",
         "build": "npx tsc && npm run copy-config",
-        "dev": "concurrently \"npx tsc --watch\" \"npm run copy-config && nodemon -q build/app.js\""
+        "clean": "rm -rf build",
+        "dev": "concurrently \"npx tsc --watch\" \"npm run copy-config && nodemon -q build/app.js\"",
+        "clean-dev": "npm run clean && npm run dev"
     },
     "repository": {
         "type": "git",
