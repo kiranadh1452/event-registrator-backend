@@ -5,13 +5,14 @@ This repo holds the backend code for events registration.
 > **Note**
 > There are two folders here, [js](./js) and [ts](./ts). The [js](./js) folder holds the javascript version of the backend and the [ts](./ts) folder holds the typescript version of the backend. The [ts](./ts) folder is still under development. So, it is recommended to use the [js](./js) folder.
 
-### How to Run ?
+### How to run the js version?
 
 > This method of running the app is not recommended. It is recommended to run the app through docker.
 
-1. Clone this repo.
+1. Clone this repo and cd into the `js` folder.
     ```bash
          git clone git@github.com:kiranadh1452/event-registrator-backend.git
+         cd event-registrator-backend/js
     ```
 2. Install the dependencies.
     ```bash
