@@ -2,9 +2,6 @@
 
 This repo holds the backend code for events registration.
 
-> **Note**
-> There are two folders here, [js](./js) and [ts](./ts). The [js](./js) folder holds the javascript version of the backend and the [ts](./ts) folder holds the typescript version of the backend. The [ts](./ts) folder is still under development. So, it is recommended to use the [js](./js) folder.
-
 ### How to Run ?
 
 > This method of running the app is not recommended. It is recommended to run the app through docker.
