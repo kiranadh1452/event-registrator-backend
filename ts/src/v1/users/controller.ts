@@ -1,6 +1,7 @@
-import User, { IUser } from "./model";
-import { sendSuccessResponse, sendErrorResponse } from "./responseHandler";
 import { Request, Response, NextFunction } from "express";
+
+import User, { IUser } from "./model.js";
+import { sendSuccessResponse, sendErrorResponse } from "./responseHandler.js";
 
 // Get all users controller
 export const getAllUsers = async (
@@ -32,17 +33,14 @@ export const getAllUsers = async (
             __v: 0,
         }).exec();
 
-        return sendSuccessResponse(res, {
-            code: 200,
-            message: "Success",
-            data: users,
-        });
+        return sendSuccessResponse(res, 200, "Success", users);
     } catch (error: any) {
-        return sendErrorResponse(res, {
-            code: 500,
-            message: "Internal Server Error",
-            details: error.message,
-        });
+        return sendErrorResponse(
+            res,
+            500,
+            "Internal Server Error",
+            error.message
+        );
     }
 };
 
@@ -70,10 +68,7 @@ export const createUser = async (
         const userExists = await User.find({ email });
 
         if (userExists && Object.keys(userExists).length > 0) {
-            return sendErrorResponse(res, {
-                code: 409,
-                message: "User already exists",
-            });
+            return sendErrorResponse(res, 409, "User already exists");
         }
 
         // create a new user
@@ -108,16 +103,40 @@ export const createUser = async (
         //     });
         // }
 
-        return sendSuccessResponse(res, {
-            code: 201,
-            message: "User created successfully",
-            data: user,
-        });
+        return sendSuccessResponse(res, 201, "User created successfully", user);
     } catch (error: any) {
-        return sendErrorResponse(res, {
-            code: 500,
-            message: "Internal Server Error",
-            details: error.message,
-        });
+        return sendErrorResponse(
+            res,
+            500,
+            "Internal Server Error",
+            error.message
+        );
+    }
+};
+
+// Get user by ID
+export const getUserById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { id } = req.params;
+
+        // search for the user by Id and if not found return 404
+        const user = await User.findById(id, { password: 0, __v: 0 }).exec();
+
+        if (!user) {
+            return sendErrorResponse(res, 404, "User not found");
+        }
+
+        return sendSuccessResponse(res, 200, "Success", user);
+    } catch (error: any) {
+        return sendErrorResponse(
+            res,
+            500,
+            "Internal Server Error",
+            error.message
+        );
     }
 };
