@@ -19,6 +19,11 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
         trim: true,
         match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     },
+    uid: {
+        type: String,
+        unique: true,
+        index: true,
+    },
     firstName: {
         type: String,
         required: true,
@@ -107,6 +112,7 @@ userSchema.methods.updateUser = async function (
     // What are the fields that we want to exculde being updated?
     const protectedFields: Array<keyof IUser> = [
         "_id",
+        "uid",
         "stripeId",
         "created_at",
         "updated_at",
@@ -174,7 +180,7 @@ userSchema.statics.createUser = async function (userData) {
     UserEvents.emit("user.created", user);
 
     // Create a new object to exclude the password and __v
-    const { password, __v, ...userObj } = user.toObject();
+    const { password, __v, uid, ...userObj } = user.toObject();
 
     return userObj;
 };

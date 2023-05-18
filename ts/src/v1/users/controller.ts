@@ -1,8 +1,16 @@
 import jwt, { Secret } from "jsonwebtoken";
+import admin, { ServiceAccount } from "firebase-admin";
+import serviceAccount from "../../config/firebase.json";
+
 import { Request, Response, NextFunction } from "express";
 
 import User from "./model.js";
 import { sendSuccessResponse, sendErrorResponse } from "./responseHandler.js";
+
+// initializing admin SDK
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount as ServiceAccount),
+});
 
 // Get all users controller
 export const getAllUsers = async (
@@ -30,7 +38,16 @@ export const createUser = async (
     next: NextFunction
 ) => {
     try {
-        const user = await User.createUser(req.body);
+        // Create user in Firebase
+        const userRecord = await admin.auth().createUser({
+            email: req.body.email,
+            password: req.body.password,
+        });
+
+        const user = await User.createUser({
+            ...req.body,
+            uid: userRecord.uid,
+        });
 
         return sendSuccessResponse(res, 201, "User created successfully", user);
     } catch (error: any) {
