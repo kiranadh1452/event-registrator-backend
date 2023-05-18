@@ -25,4 +25,5 @@ export interface IUser extends Document {
 export interface IUserModel extends Model<IUser> {
     fetchUsers(queryParams: any): Promise<IUser[]>;
     createUser(userData: any): Promise<IUser>;
+    deleteUser(userId: string): Promise<IUser>;
 }

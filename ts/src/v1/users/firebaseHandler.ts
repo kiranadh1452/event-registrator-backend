@@ -7,6 +7,11 @@ export const initializeFirebase = () => {
     });
 };
 
+/**
+ * description: Create user in Firebase
+ * @param {string} email - User's email
+ * @param {string} password - User's password
+ */
 export const createUserInFirebase = async (email: string, password: string) => {
     // Create user in Firebase
     const userRecord = await admin.auth().createUser({
@@ -17,6 +22,10 @@ export const createUserInFirebase = async (email: string, password: string) => {
     return userRecord;
 };
 
+/**
+ * description: Check if the token is valid
+ * @param {string} idToken - User's token
+ */
 export const checkFirebaseToken = async (idToken: string) => {
     try {
         const decodedToken = await admin
@@ -26,5 +35,17 @@ export const checkFirebaseToken = async (idToken: string) => {
         return decodedToken;
     } catch (error) {
         return false;
+    }
+};
+
+/**
+ * description: Delete user from Firebase
+ * @param {string} id - User's id
+ */
+export const deleteUser = async (id: string) => {
+    try {
+        await admin.auth().deleteUser(id);
+    } catch (error) {
+        throw error;
     }
 };

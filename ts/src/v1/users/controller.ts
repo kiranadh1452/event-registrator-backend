@@ -181,13 +181,6 @@ export const deleteUserById = async (
         const { id } = req.params;
         const { keep_events = false, keep_tickets = false } = req.query;
 
-        // search for the user by Id and if not found return 404
-        const user = await User.findById(id).exec();
-
-        if (!user) {
-            return sendErrorResponse(res, 404, `User with ID ${id} not found`);
-        }
-
         // Delete user events if keep_events is false
         // if (!keep_events) {
         //     await user.destroyEvents();
@@ -199,7 +192,11 @@ export const deleteUserById = async (
         // }
 
         // delete user
-        await User.findByIdAndDelete(id);
+        const userFoundAndDeleted = await User.deleteUser(id);
+
+        if (!userFoundAndDeleted) {
+            return sendErrorResponse(res, 404, "User not found");
+        }
 
         return sendSuccessResponse(res, 200, "User deleted successfully");
     } catch (error: any) {

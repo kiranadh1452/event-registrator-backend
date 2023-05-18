@@ -191,6 +191,16 @@ userSchema.statics.createUser = async function (userData) {
     return userObj;
 };
 
+// Delete an existing user
+userSchema.statics.deleteUser = async function (userId: string) {
+    const result = await this.deleteOne({ _id: userId }).exec();
+
+    if (result.deletedCount === 0) return false;
+
+    UserEvents.emit("user.deleted", userId);
+    return true;
+};
+
 /**
  * @Hooks to be used on the user model
  */
