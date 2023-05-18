@@ -145,8 +145,10 @@ userSchema.statics.fetchUsers = async function (queryParams) {
 
     if (first_name) query.firstName = { $regex: first_name, $options: "i" };
     if (email) query.email = { $regex: email, $options: "i" };
-    if (created_at_before) query.created_at = { $lte: created_at_before };
-    if (created_at_after) query.created_at = { $gte: created_at_after };
+    if (created_at_before)
+        query.created_at = { ...query.created_at, $lte: created_at_before };
+    if (created_at_after)
+        query.created_at = { ...query.created_at, $gte: created_at_after };
     if (is_admin !== undefined) query.is_admin = is_admin;
 
     const users: IUser[] = await this.find(query, {
