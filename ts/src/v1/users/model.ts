@@ -1,23 +1,12 @@
 import bcrypt from "bcrypt";
-import mongoose, { Document, Model, Schema } from "mongoose";
+import { EventEmitter } from "events";
+import mongoose, { Schema } from "mongoose";
 
-export interface IUser extends Document {
-    stripeId?: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    phoneNumber?: string;
-    country?: string;
-    address?: string;
-    zip_code?: string;
-    password: string;
-    is_admin: boolean;
-    dateOfBirth?: string;
-    created_at: Date;
-    updated_at: Date;
-    authentication(password: string): Promise<boolean>;
-    encryptPasswordFunction(password: string): Promise<string>;
-}
+// importing types
+import { IUser, IUserModel } from "./types";
+
+// create an event emitter for the user model
+export const UserEvents = new EventEmitter();
 
 const userSchema: Schema<IUser> = new Schema<IUser>({
     stripeId: {
@@ -81,7 +70,11 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
     },
 });
 
-// Methods to be used on the user model
+/**
+ * @Methods to be used on the user model
+ */
+
+// Authenticate the user
 userSchema.methods.authentication = async function (
     password: string
 ): Promise<boolean> {
@@ -92,6 +85,7 @@ userSchema.methods.authentication = async function (
     }
 };
 
+// Encrypt the password
 userSchema.methods.encryptPasswordFunction = async function (
     password: string
 ): Promise<string> {
@@ -104,7 +98,89 @@ userSchema.methods.encryptPasswordFunction = async function (
     }
 };
 
-// Hooks to be used on the user model
+// Update the user
+userSchema.methods.updateUser = async function (
+    this: IUser,
+    updateProps: Partial<IUser>
+): Promise<IUser> {
+    let userToUpdate: any = this;
+
+    // What are the fields that we want to exculde being updated?
+    const protectedFields: Array<keyof IUser> = [
+        "_id",
+        "stripeId",
+        "created_at",
+        "updated_at",
+    ];
+
+    Object.keys(updateProps).forEach((key: string) => {
+        const userKey = key as keyof IUser;
+
+        // Only update the field if it's not a protected field
+        if (
+            !protectedFields.includes(userKey) &&
+            updateProps[userKey] !== undefined
+        ) {
+            userToUpdate[userKey] = updateProps[userKey];
+        }
+    });
+
+    // Update the updated_at field
+    userToUpdate.updated_at = new Date();
+
+    // Save and return the user
+    return await (userToUpdate as IUser).save();
+};
+
+/**
+ * @Static_Methods to be used on the user model
+ */
+
+// Fetch all the users
+userSchema.statics.fetchUsers = async function (queryParams) {
+    const { first_name, email, created_at_before, created_at_after, is_admin } =
+        queryParams;
+
+    const query: any = {};
+
+    if (first_name) query.firstName = { $regex: first_name, $options: "i" };
+    if (email) query.email = { $regex: email, $options: "i" };
+    if (created_at_before) query.created_at = { $lte: created_at_before };
+    if (created_at_after) query.created_at = { $gte: created_at_after };
+    if (is_admin !== undefined) query.is_admin = is_admin;
+
+    const users: IUser[] = await this.find(query, {
+        password: 0,
+        __v: 0,
+    }).exec();
+
+    return users;
+};
+
+// Create a new user
+userSchema.statics.createUser = async function (userData) {
+    const userExists = await this.findOne({ email: userData.email });
+
+    if (userExists) {
+        throw new Error("User already exists");
+    }
+
+    const user = new this(userData);
+
+    await user.save();
+
+    // Emit event for creating stripe customer
+    UserEvents.emit("user.created", user);
+
+    // Create a new object to exclude the password and __v
+    const { password, __v, ...userObj } = user.toObject();
+
+    return userObj;
+};
+
+/**
+ * @Hooks to be used on the user model
+ */
 userSchema.pre("save", async function (this, next: (err?: Error) => void) {
     const user = this;
 
@@ -119,6 +195,6 @@ userSchema.pre("save", async function (this, next: (err?: Error) => void) {
     next();
 });
 
-const User = mongoose.model<IUser>("User", userSchema);
+const User = mongoose.model<IUser, IUserModel>("User", userSchema);
 
 export default User;
