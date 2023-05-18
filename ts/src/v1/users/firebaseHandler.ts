@@ -16,3 +16,15 @@ export const createUserInFirebase = async (email: string, password: string) => {
 
     return userRecord;
 };
+
+export const checkFirebaseToken = async (idToken: string) => {
+    try {
+        const decodedToken = await admin
+            .auth()
+            .verifyIdToken(idToken as string);
+
+        return decodedToken;
+    } catch (error) {
+        return false;
+    }
+};

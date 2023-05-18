@@ -10,6 +10,9 @@ import {
     deleteUserById,
 } from "./controller.js";
 
+// import middlewares
+import { checkUserAuthentication } from "./middleware.js";
+
 const UserRouter: Router = express.Router();
 
 // This is a test endpoint
@@ -25,18 +28,18 @@ UserRouter.get("/test", (req: Request, res: Response) => {
 UserRouter.post("/", createUser);
 
 // get all users
-UserRouter.get("/", getAllUsers);
+UserRouter.get("/", checkUserAuthentication, getAllUsers);
 
 // get a user by id
 UserRouter.get("/:id", getUserById);
 
 // update a user by id
-UserRouter.put("/:id", updateUserById);
+UserRouter.put("/:id", checkUserAuthentication, updateUserById);
 
 // login a user
-UserRouter.post("/login", loginUser);
+UserRouter.post("/login", checkUserAuthentication, loginUser);
 
 // delete a user
-UserRouter.delete("/:id", deleteUserById);
+UserRouter.delete("/:id", checkUserAuthentication, deleteUserById);
 
 export default UserRouter;
