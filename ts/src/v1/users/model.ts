@@ -8,6 +8,12 @@ import { IUser, IUserModel } from "./types";
 import { UserEvents } from "./userEventsHandler";
 
 const userSchema: Schema<IUser> = new Schema<IUser>({
+    _id: {
+        type: String,
+        required: true,
+        index: true,
+        unique: true,
+    },
     stripeId: {
         type: String,
     },
@@ -180,7 +186,7 @@ userSchema.statics.createUser = async function (userData) {
     UserEvents.emit("user.created", user);
 
     // Create a new object to exclude the password and __v
-    const { password, __v, uid, ...userObj } = user.toObject();
+    const { password, __v, ...userObj } = user.toObject();
 
     return userObj;
 };

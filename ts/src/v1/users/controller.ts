@@ -44,7 +44,7 @@ export const createUser = async (
 
         const user = await User.createUser({
             ...req.body,
-            uid: userRecord.uid,
+            _id: userRecord.uid,
         });
 
         return sendSuccessResponse(res, 201, "User created successfully", user);
