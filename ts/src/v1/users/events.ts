@@ -1,4 +1,5 @@
-import { IUser, UserEvents } from "./model";
+import { IUser } from "./types";
+import { UserEvents } from "./model";
 
 /**
  * Events Handlers on the User Model

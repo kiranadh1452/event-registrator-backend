@@ -1,7 +1,12 @@
 import express, { Request, Response, Router } from "express";
 
 // import controllers
-import { getAllUsers, createUser } from "./controller.js";
+import {
+    getAllUsers,
+    createUser,
+    getUserById,
+    updateUserById,
+} from "./controller.js";
 
 const UserRouter: Router = express.Router();
 
@@ -19,5 +24,11 @@ UserRouter.post("/", createUser);
 
 // get all users
 UserRouter.get("/", getAllUsers);
+
+// get a user by id
+UserRouter.get("/:id", getUserById);
+
+// update a user by id
+UserRouter.put("/:id", updateUserById);
 
 export default UserRouter;
