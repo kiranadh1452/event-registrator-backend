@@ -11,7 +11,10 @@ import {
 } from "./controller.js";
 
 // import middlewares
-import { checkUserAuthentication } from "./middleware.js";
+import {
+    checkUserAuthentication,
+    isLoggedInUserRequesting,
+} from "./middleware.js";
 
 const UserRouter: Router = express.Router();
 
@@ -31,7 +34,12 @@ UserRouter.post("/", createUser);
 UserRouter.get("/", checkUserAuthentication, getAllUsers);
 
 // get a user by id
-UserRouter.get("/:id", getUserById);
+UserRouter.get(
+    "/:id",
+    checkUserAuthentication,
+    isLoggedInUserRequesting,
+    getUserById
+);
 
 // update a user by id
 UserRouter.put("/:id", checkUserAuthentication, updateUserById);
