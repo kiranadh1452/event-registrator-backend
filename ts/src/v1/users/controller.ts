@@ -155,3 +155,44 @@ export const loginUser = async (
         );
     }
 };
+
+// Delete a user by ID
+export const deleteUserById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { id } = req.params;
+        const { keep_events = false, keep_tickets = false } = req.query;
+
+        // search for the user by Id and if not found return 404
+        const user = await User.findById(id).exec();
+
+        if (!user) {
+            return sendErrorResponse(res, 404, `User with ID ${id} not found`);
+        }
+
+        // Delete user events if keep_events is false
+        // if (!keep_events) {
+        //     await user.destroyEvents();
+        // }
+
+        // // Delete user tickets if keep_tickets is false
+        // if (!keep_tickets) {
+        //     await user.destroyTickets();
+        // }
+
+        // delete user
+        await User.findByIdAndDelete(id);
+
+        return sendSuccessResponse(res, 200, "User deleted successfully");
+    } catch (error: any) {
+        return sendErrorResponse(
+            res,
+            500,
+            "Internal Server Error",
+            error.message
+        );
+    }
+};

@@ -2,11 +2,12 @@ import express, { Request, Response, Router } from "express";
 
 // import controllers
 import {
-    getAllUsers,
+    loginUser,
     createUser,
+    getAllUsers,
     getUserById,
     updateUserById,
-    loginUser,
+    deleteUserById,
 } from "./controller.js";
 
 const UserRouter: Router = express.Router();
@@ -34,4 +35,8 @@ UserRouter.put("/:id", updateUserById);
 
 // login a user
 UserRouter.post("/login", loginUser);
+
+// delete a user
+UserRouter.delete("/:id", deleteUserById);
+
 export default UserRouter;
