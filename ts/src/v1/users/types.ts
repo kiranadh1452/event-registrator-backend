@@ -4,7 +4,6 @@ export interface IUser extends Document {
     _id: string;
     stripeId?: string;
     email: string;
-    uid?: string;
     firstName: string;
     lastName: string;
     phoneNumber?: string;
