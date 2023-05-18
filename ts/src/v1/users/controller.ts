@@ -1,3 +1,4 @@
+import jwt, { Secret } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
 import User from "./model.js";
@@ -92,6 +93,59 @@ export const updateUserById = async (
         await user.updateUser(req.body);
 
         return sendSuccessResponse(res, 200, "User updated successfully", user);
+    } catch (error: any) {
+        return sendErrorResponse(
+            res,
+            500,
+            "Internal Server Error",
+            error.message
+        );
+    }
+};
+
+// login user
+export const loginUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        // get email and password from request body
+        const { email, password, remember_me } = req.body;
+
+        // check if user exists and return 404 if not
+        const user = await User.findOne({ email: email }); // do not trim password from here yet as it is needed to be used for authentication
+
+        if (!user) {
+            return sendErrorResponse(res, 404, "User not found");
+        }
+
+        // verify password and return 401 if not valid
+        const passwordMatch = await user.authentication(password);
+
+        if (!passwordMatch) {
+            return sendErrorResponse(res, 401, "Invalid credentials");
+        }
+
+        // remove password and __v from user object
+        const { password: pwd, __v, ...userObj } = user.toObject();
+
+        // set token expiration time
+        const expiresIn = remember_me ? "7d" : "1h";
+
+        // generate an access token and return it
+        const token = jwt.sign(
+            { ...userObj },
+            process.env.JWT_SECRET as Secret,
+            {
+                expiresIn,
+            }
+        );
+
+        return sendSuccessResponse(res, 200, "Success", {
+            id: userObj._id,
+            token,
+        });
     } catch (error: any) {
         return sendErrorResponse(
             res,

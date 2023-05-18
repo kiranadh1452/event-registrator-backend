@@ -6,6 +6,7 @@ import {
     createUser,
     getUserById,
     updateUserById,
+    loginUser,
 } from "./controller.js";
 
 const UserRouter: Router = express.Router();
@@ -31,4 +32,6 @@ UserRouter.get("/:id", getUserById);
 // update a user by id
 UserRouter.put("/:id", updateUserById);
 
+// login a user
+UserRouter.post("/login", loginUser);
 export default UserRouter;
