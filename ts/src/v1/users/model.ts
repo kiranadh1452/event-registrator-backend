@@ -1,12 +1,11 @@
 import bcrypt from "bcrypt";
-import { EventEmitter } from "events";
 import mongoose, { Schema } from "mongoose";
 
 // importing types
 import { IUser, IUserModel } from "./types";
 
-// create an event emitter for the user model
-export const UserEvents = new EventEmitter();
+// import event emitter
+import { UserEvents } from "./userEventsHandler";
 
 const userSchema: Schema<IUser> = new Schema<IUser>({
     stripeId: {
