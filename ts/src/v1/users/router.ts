@@ -1,5 +1,14 @@
 import express, { Request, Response, Router } from "express";
 
+// import router specific config
+import { UserSignUpRequirements } from "./config/dataFields.js";
+
+// import global - data validation middlewares
+import {
+    nonEmptyValidation,
+    validationResultHandler,
+} from "../validation-middlewares/dataFormatValidation.js";
+
 // import controllers
 import {
     loginUser,
@@ -10,7 +19,7 @@ import {
     deleteUserById,
 } from "./controller.js";
 
-// import middlewares
+// import local middlewares
 import {
     checkUserAuthentication,
     isLoggedInUserRequesting,
@@ -28,7 +37,12 @@ UserRouter.get("/test", (req: Request, res: Response) => {
 });
 
 // create a user
-UserRouter.post("/", createUser);
+UserRouter.post(
+    "/",
+    nonEmptyValidation(UserSignUpRequirements),
+    validationResultHandler,
+    createUser
+);
 
 // get all users
 UserRouter.get("/", checkUserAuthentication, getAllUsers);
