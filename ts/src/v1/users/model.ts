@@ -7,7 +7,7 @@ import { IUser, IUserModel } from "./types";
 // import event emitter
 import { UserEvents } from "./userEventsHandler";
 
-const userSchema: Schema<IUser> = new Schema<IUser>({
+export const userSchema: Schema<IUser> = new Schema<IUser>({
     _id: {
         type: String,
         required: true,
@@ -39,18 +39,22 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
     },
     phoneNumber: {
         type: String,
+        required: true,
         trim: true,
         validate: /^\d{10}$/,
     },
     country: {
         type: String,
+        required: true,
     },
     address: {
         type: String,
+        required: true,
         trim: true,
     },
     zip_code: {
         type: String,
+        required: true,
     },
     password: {
         type: String,
@@ -63,6 +67,7 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
     },
     dateOfBirth: {
         type: String,
+        required: true,
         trim: true,
     },
     created_at: {
