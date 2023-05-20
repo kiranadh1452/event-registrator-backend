@@ -66,7 +66,7 @@ export const userSchema: Schema<IUser> = new Schema<IUser>({
         default: false,
     },
     dateOfBirth: {
-        type: String,
+        type: Date,
         required: true,
         trim: true,
     },

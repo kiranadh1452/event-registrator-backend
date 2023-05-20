@@ -23,6 +23,116 @@ export const nonEmptyValidation = (dataArray: Array<String>) => {
     }
 };
 
+export const dataFormatValidation = (dataArray: Array<String>) => {
+    try {
+        const validations: Array<ValidationChain> = [];
+
+        dataArray.forEach((data) => {
+            switch (data) {
+                case "email":
+                    // case "company_email":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isEmail()
+                            .withMessage("Invalid email format")
+                    );
+                    break;
+
+                case "password":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isLength({ min: 8, max: 20 })
+                            .withMessage(
+                                "Password must be at between 8 to 20 characters"
+                            )
+                    );
+                    break;
+
+                case "firstName":
+                case "lastName":
+                case "middleName":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isLength({ min: 2, max: 20 })
+                            .withMessage(
+                                "Name must be at between 2 to 20 characters"
+                            )
+                    );
+                    break;
+
+                case "phoneNumber":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isMobilePhone("any")
+                            .withMessage("Invalid phone number format")
+                    );
+                    break;
+
+                case "linkUrl":
+                case "personalWebsite":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isURL()
+                            .withMessage("Invalid shop url format")
+                    );
+                    break;
+
+                case "otp":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isLength({ min: 6, max: 8 })
+                            .withMessage("Invalid OTP")
+                    );
+                    break;
+
+                case "description":
+                case "company_address":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isLength({ min: 10, max: 1000 })
+                            .withMessage(
+                                "Description must be at between 10 to 1000 characters"
+                            )
+                    );
+                    break;
+
+                case "id":
+                case "subscription_id":
+                case "userId":
+                case "payment_intent":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isLength({ min: 10, max: 64 })
+                            .withMessage("Invalid ID")
+                    );
+                    break;
+
+                default:
+                    console.log(`No validation for data: ${data}`);
+                    break;
+            }
+        });
+
+        return validations;
+    } catch (error: any) {
+        throw new Error(`Error while validating data format ${error.message}`);
+    }
+};
+
+export const nonEmptyPlusDataValidation = (dataArray: Array<String>) => {
+    const nonEmptyDataValidationArray = nonEmptyValidation(dataArray);
+    const dataFormatValidationArray = dataFormatValidation(dataArray);
+    return [...nonEmptyDataValidationArray, ...dataFormatValidationArray];
+};
+
 /**
  * description: Function to handle the validation results
  */
