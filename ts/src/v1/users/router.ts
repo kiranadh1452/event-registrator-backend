@@ -6,6 +6,8 @@ import { UserSignUpRequirements } from "./config/dataFields.js";
 // import global - data validation middlewares
 import {
     nonEmptyValidation,
+    dataFormatValidation,
+    nonEmptyPlusDataValidation,
     validationResultHandler,
 } from "../validation-middlewares/dataFormatValidation.js";
 
@@ -39,7 +41,7 @@ UserRouter.get("/test", (req: Request, res: Response) => {
 // create a user
 UserRouter.post(
     "/",
-    nonEmptyValidation(UserSignUpRequirements),
+    nonEmptyPlusDataValidation(UserSignUpRequirements),
     validationResultHandler,
     createUser
 );
@@ -52,16 +54,33 @@ UserRouter.get(
     "/:id",
     checkUserAuthentication,
     isLoggedInUserRequesting,
+    nonEmptyPlusDataValidation(["id"]),
+    validationResultHandler,
     getUserById
 );
 
 // update a user by id
-UserRouter.put("/:id", checkUserAuthentication, updateUserById);
+UserRouter.put(
+    "/:id",
+    checkUserAuthentication,
+    isLoggedInUserRequesting,
+    nonEmptyPlusDataValidation(["id"]), // id can't be empty or invalid
+    dataFormatValidation(UserSignUpRequirements),
+    // any of the sign up fields could be edited but they may be empty, so using dataFormatValidation instead of nonEmptyPlusDataValidation
+    updateUserById
+);
 
 // login a user
 UserRouter.post("/login", checkUserAuthentication, loginUser);
 
 // delete a user
-UserRouter.delete("/:id", checkUserAuthentication, deleteUserById);
+UserRouter.delete(
+    "/:id",
+    nonEmptyPlusDataValidation(["id"]),
+    validationResultHandler,
+    checkUserAuthentication,
+    isLoggedInUserRequesting,
+    deleteUserById
+);
 
 export default UserRouter;
