@@ -4,6 +4,7 @@ import { check, validationResult, ValidationChain } from "express-validator";
 // import response handlers
 import { sendErrorRes } from "../helpers/responseHandler.js";
 
+// makes sure that the data fields passed in dataArray are not empty
 export const nonEmptyValidation = (dataArray: Array<String>) => {
     try {
         const validations: Array<ValidationChain> = [];
@@ -23,6 +24,7 @@ export const nonEmptyValidation = (dataArray: Array<String>) => {
     }
 };
 
+// makes sure that the data fields passed in dataArray are of correct format or empty
 export const dataFormatValidation = (dataArray: Array<String>) => {
     try {
         const validations: Array<ValidationChain> = [];
@@ -115,6 +117,15 @@ export const dataFormatValidation = (dataArray: Array<String>) => {
                     );
                     break;
 
+                case "zip":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .matches(/^[0-9]{5}(?:-[0-9]{4})?$/)
+                            .withMessage("Invalid zip code format")
+                    );
+                    break;
+
                 default:
                     console.log(`No validation for data: ${data}`);
                     break;
@@ -127,6 +138,7 @@ export const dataFormatValidation = (dataArray: Array<String>) => {
     }
 };
 
+// makes sure that the data fields passed in dataArray are of correct format and non-empty
 export const nonEmptyPlusDataValidation = (dataArray: Array<String>) => {
     const nonEmptyDataValidationArray = nonEmptyValidation(dataArray);
     const dataFormatValidationArray = dataFormatValidation(dataArray);
