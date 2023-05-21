@@ -1,5 +1,5 @@
 import admin, { ServiceAccount } from "firebase-admin";
-import serviceAccount from "../../config/firebase.json";
+import serviceAccount from "../../../config/firebase.json";
 
 export const initializeFirebase = () => {
     admin.initializeApp({

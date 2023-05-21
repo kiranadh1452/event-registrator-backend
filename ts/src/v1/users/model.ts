@@ -2,10 +2,10 @@ import bcrypt from "bcrypt";
 import mongoose, { Schema } from "mongoose";
 
 // importing types
-import { IUser, IUserModel } from "./types";
+import { IUser, IUserModel } from "./helpers/types";
 
 // import event emitter
-import { UserEvents } from "./userEventsHandler";
+import { UserEvents } from "./helpers/userEventsHandler";
 
 export const userSchema: Schema<IUser> = new Schema<IUser>({
     _id: {
@@ -52,7 +52,7 @@ export const userSchema: Schema<IUser> = new Schema<IUser>({
         required: true,
         trim: true,
     },
-    zip_code: {
+    zipCode: {
         type: String,
         required: true,
     },
@@ -61,7 +61,7 @@ export const userSchema: Schema<IUser> = new Schema<IUser>({
         required: true,
         validate: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
     },
-    is_admin: {
+    isAdmin: {
         type: Boolean,
         default: false,
     },

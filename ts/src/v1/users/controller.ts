@@ -1,11 +1,16 @@
 import jwt, { Secret } from "jsonwebtoken";
-import admin, { ServiceAccount } from "firebase-admin";
 import { Request, Response, NextFunction } from "express";
 
 // file based imports
 import User from "./model.js";
-import { initializeFirebase, createUserInFirebase } from "./firebaseHandler.js";
-import { sendSuccessResponse, sendErrorResponse } from "./responseHandler.js";
+import {
+    initializeFirebase,
+    createUserInFirebase,
+} from "./helpers/firebaseHandler.js";
+import {
+    sendSuccessResponse,
+    sendErrorResponse,
+} from "./helpers/responseHandler.js";
 
 // initializing admin SDK
 initializeFirebase();

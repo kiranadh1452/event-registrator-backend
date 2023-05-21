@@ -9,9 +9,9 @@ export interface IUser extends Document {
     phoneNumber?: string;
     country?: string;
     address?: string;
-    zip_code?: string;
+    zipCode?: string;
     password: string;
-    is_admin: boolean;
+    isAdmin: boolean;
     dateOfBirth?: string;
     created_at: Date;
     updated_at: Date;

@@ -1,4 +1,4 @@
-import { sendSuccessRes, sendErrorRes } from "../helpers/responseHandler.js";
+import { sendSuccessRes, sendErrorRes } from "../../helpers/responseHandler.js";
 
 export const sendSuccessResponse = sendSuccessRes;
 export const sendErrorResponse = sendErrorRes;

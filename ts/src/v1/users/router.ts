@@ -1,11 +1,10 @@
 import express, { Request, Response, Router } from "express";
 
 // import router specific config
-import { UserSignUpRequirements } from "./config/dataFields.js";
+import { UserSignUpRequirements } from "./helpers/dataFields.js";
 
 // import global - data validation middlewares
 import {
-    nonEmptyValidation,
     dataFormatValidation,
     nonEmptyPlusDataValidation,
     validationResultHandler,
@@ -76,10 +75,10 @@ UserRouter.post("/login", checkUserAuthentication, loginUser);
 // delete a user
 UserRouter.delete(
     "/:id",
-    nonEmptyPlusDataValidation(["id"]),
-    validationResultHandler,
     checkUserAuthentication,
     isLoggedInUserRequesting,
+    nonEmptyPlusDataValidation(["id"]),
+    validationResultHandler,
     deleteUserById
 );
 

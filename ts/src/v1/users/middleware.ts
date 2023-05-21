@@ -1,5 +1,5 @@
-import { sendErrorResponse } from "./responseHandler";
-import { checkFirebaseToken } from "./firebaseHandler";
+import { sendErrorResponse } from "./helpers/responseHandler";
+import { checkFirebaseToken } from "./helpers/firebaseHandler";
 import { Request, Response, NextFunction } from "express";
 
 export const checkUserAuthentication = async (

@@ -117,7 +117,7 @@ export const dataFormatValidation = (dataArray: Array<String>) => {
                     );
                     break;
 
-                case "zip":
+                case "zipCode":
                     validations.push(
                         check(data as string)
                             .optional()
