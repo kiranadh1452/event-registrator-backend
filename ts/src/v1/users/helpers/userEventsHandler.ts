@@ -1,6 +1,7 @@
 import { IUser } from "./types";
 import { EventEmitter } from "events";
 import { deleteUser } from "./firebaseHandler";
+import { addNewCustomer } from "../../stripe-handler/stripeHandler";
 
 // create an event emitter for the user model
 export const UserEvents = new EventEmitter();
@@ -13,9 +14,14 @@ UserEvents.on("user.created", async (user: IUser) => {
     console.log("User data: ", user);
 
     // this would be these steps:
-    // 1. Create the customer in stripe
-    // 2. Send a welcome text message
-    // 3. Send a welcome email
+
+    // 1. Create the customer in stripe : DONE
+    // creating a customer in stripe
+    const customer = await addNewCustomer(user._id, user.email);
+    console.log("Customer created in stripe: ", customer);
+    // TODO: If customer creation in stripe fails, retry it (maybe later we can shift this to a pub-sub model)
+
+    // 2. Send a welcome email
 });
 
 UserEvents.on("user.deleted", async (uid: string) => {
