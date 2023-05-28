@@ -1,6 +1,7 @@
 // import the required packages
 import * as dotenv from "dotenv";
 import bodyParser from "body-parser";
+import RateLimit from "express-rate-limit";
 import express, { Express, Request, Response, NextFunction } from "express";
 
 // import database connection
@@ -21,6 +22,13 @@ dotenv.config({
 const port = process.env.PORT || 8000;
 const app: Express = express();
 
+// setting rate limit
+const limiter = RateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: process.env.MODE == "dev" ? 5 : 1000,
+});
+
+app.use(limiter);
 app.set("port", port);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
