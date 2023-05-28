@@ -5,6 +5,7 @@ import { UserSignUpRequirements } from "./helpers/dataFields.js";
 
 // import global - data validation middlewares
 import {
+    sanitizeData,
     dataFormatValidation,
     nonEmptyPlusDataValidation,
     validationResultHandler,
@@ -41,6 +42,7 @@ UserRouter.get("/test", (req: Request, res: Response) => {
 UserRouter.post(
     "/",
     nonEmptyPlusDataValidation(UserSignUpRequirements),
+    sanitizeData(UserSignUpRequirements),
     validationResultHandler,
     createUser
 );
@@ -54,6 +56,7 @@ UserRouter.get(
     checkUserAuthentication,
     isLoggedInUserRequesting,
     nonEmptyPlusDataValidation(["id"]),
+    sanitizeData(["id"]),
     validationResultHandler,
     getUserById
 );
@@ -65,12 +68,20 @@ UserRouter.put(
     isLoggedInUserRequesting,
     nonEmptyPlusDataValidation(["id"]), // id can't be empty or invalid
     dataFormatValidation(UserSignUpRequirements),
+    sanitizeData([...UserSignUpRequirements, "id"]),
     // any of the sign up fields could be edited but they may be empty, so using dataFormatValidation instead of nonEmptyPlusDataValidation
     updateUserById
 );
 
 // login a user
-UserRouter.post("/login", checkUserAuthentication, loginUser);
+UserRouter.post(
+    "/login",
+    sanitizeData(["email", "password"]),
+    nonEmptyPlusDataValidation(["email", "password"]),
+    validationResultHandler,
+    checkUserAuthentication,
+    loginUser
+);
 
 // delete a user
 UserRouter.delete(
@@ -78,6 +89,7 @@ UserRouter.delete(
     checkUserAuthentication,
     isLoggedInUserRequesting,
     nonEmptyPlusDataValidation(["id"]),
+    sanitizeData(["id"]),
     validationResultHandler,
     deleteUserById
 );

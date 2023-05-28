@@ -24,6 +24,25 @@ export const nonEmptyValidation = (dataArray: Array<String>) => {
     }
 };
 
+export const sanitizeData = (dataArray: Array<String>) => {
+    try {
+        const sanitizations: Array<ValidationChain> = [];
+        dataArray.forEach((data) => {
+            sanitizations.push(
+                check(data as string)
+                    .optional()
+                    .trim()
+                    .escape()
+            );
+        });
+
+        return sanitizations;
+    } catch (error) {
+        console.log(error);
+        throw new Error("Error while sanitizing the data fields");
+    }
+};
+
 // makes sure that the data fields passed in dataArray are of correct format or empty
 export const dataFormatValidation = (dataArray: Array<String>) => {
     try {
