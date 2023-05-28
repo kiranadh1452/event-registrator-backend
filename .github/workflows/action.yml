@@ -9,6 +9,15 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
+        env:
+            MODE: dev
+            PORT: 3000
+            JWT_SECRET: ${{ secrets.JWT_SECRET }}
+            MONGO_URI_ONLINE: ${{ secrets.MONGO_URI_ONLINE }}
+            MONGO_URI_OFFLINE: ${{ secrets.MONGO_URI_OFFLINE }}
+            STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+            FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+            FIREBASE_CONFIG_ENCRYPT_KEY: ${{ secrets.FIREBASE_CONFIG_ENCRYPT_KEY }}
 
         steps:
             - name: Chekout code
@@ -19,6 +28,15 @@ jobs:
               with:
                   node-version: 14.x
 
+            - name: Start MongoDB
+              uses: supercharge/mongodb-github-action@1.8.0
+              with:
+                  mongodb-version: "6.0"
+
+            - name: Decrypt Firebase permission file
+              run: |
+                  openssl enc -d -aes-256-cbc -in ts/src/config/encrypted-firebase.json.enc -out ts/src/config/firebase.json -pass env:FIREBASE_CONFIG_ENCRYPT_KEY -pbkdf2
+
             - name: Install dependencies
               run: |
                   cd ts
@@ -26,5 +44,6 @@ jobs:
 
             - name: Run tests
               run: |
-                  cd ts 
+                  cd ts
+                  ls src/config/
                   npm test
