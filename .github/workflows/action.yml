@@ -23,42 +23,27 @@ jobs:
             - name: Chekout code
               uses: actions/checkout@v3
 
-            # - name: Install node required
-            #   uses: actions/setup-node@v3
-            #   with:
-            #       node-version: 14.x
+            - name: Install node required
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 14.x
 
-            # - name: Start MongoDB
-            #   uses: supercharge/mongodb-github-action@1.8.0
-            #   with:
-            #       mongodb-version: "6.0"
+            - name: Start MongoDB
+              uses: supercharge/mongodb-github-action@1.8.0
+              with:
+                  mongodb-version: "6.0"
 
-            - name: Check if secret exists
+            - name: Decrypt Firebase permission file
               run: |
-                  if [[ -n "${{ secrets.FIREBASE_API_KEY }}" ]]; then
-                    echo "Secret exists"
-                  else
-                    echo "Secret does not exist"
-                  fi
+                  openssl enc -d -aes-256-cbc -in ts/src/config/encrypted-firebase.json.enc -out ts/src/config/firebase.json -pass env:FIREBASE_CONFIG_ENCRYPT_KEY -pbkdf2
 
-            - name: Print secret
+            - name: Install dependencies
               run: |
-                  echo $FIREBASE_API_KEY
-                  echo $FIREBASE_CONFIG_ENCRYPT_KEY
-                  echo $JWT_SECRET
+                  cd ts
+                  npm install
 
-            # - name: Decrypt Firebase permission file
-            #   run: |
-            #       echo $FIREBASE_CONFIG_ENCRYPT_KEY
-            #       openssl enc -d -aes-256-cbc -in ts/src/config/encrypted-firebase.json.enc -out ts/src/config/firebase.json -pass env:FIREBASE_CONFIG_ENCRYPT_KEY -pbkdf2
-
-            # - name: Install dependencies
-            #   run: |
-            #       cd ts
-            #       npm install
-
-            # - name: Run tests
-            #   run: |
-            #       cd ts
-            #       ls src/config/
-            #       npm test
+            - name: Run tests
+              run: |
+                  cd ts
+                  ls src/config/
+                  npm test
