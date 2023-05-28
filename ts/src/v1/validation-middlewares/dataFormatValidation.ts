@@ -93,7 +93,42 @@ export const dataFormatValidation = (dataArray: Array<String>) => {
                     );
                     break;
 
+                case "country":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isLength({ min: 2, max: 3 })
+                            .withMessage("Invalid country code")
+                    );
+                    break;
+
+                case "dateOfBirth":
+                    // check if the date is at least 10 years old
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .custom((value) => {
+                                const date = new Date(value);
+                                const today = new Date();
+                                const age =
+                                    today.getFullYear() - date.getFullYear();
+                                const month =
+                                    today.getMonth() - date.getMonth();
+                                if (
+                                    month < 0 ||
+                                    (month === 0 &&
+                                        today.getDate() < date.getDate())
+                                ) {
+                                    return age - 1 >= 10;
+                                }
+                                return age >= 10;
+                            })
+                            .withMessage("You must be at least 10 years old")
+                    );
+                    break;
+
                 case "description":
+                case "address":
                 case "company_address":
                     validations.push(
                         check(data as string)
