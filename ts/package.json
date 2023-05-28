@@ -12,7 +12,7 @@
         "dev": "concurrently \"npx tsc --watch\" \"npm run copy-config && nodemon -q build/app.js\"",
         "start": "npm run clean && npm run build && node build/app.js",
         "clean-dev": "npm run clean && npm run dev",
-        "test": "npm run clean && npm run build && npx tape ./build/**/*.test.js"
+        "test": "npm run clean && npm run build && npx tape ./build/**/*.test.js | tap-mocha-reporter spec"
     },
     "repository": {
         "type": "git",
@@ -43,6 +43,7 @@
         "@types/tape": "^5.6.0",
         "concurrently": "^8.0.1",
         "nodemon": "^2.0.22",
+        "tap-mocha-reporter": "^5.0.3",
         "typescript": "^5.0.4"
     }
 }
