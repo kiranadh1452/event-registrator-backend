@@ -134,7 +134,7 @@ export const loginUser = async (
         const { email, password, remember_me } = req.body;
 
         // check if user exists and return 404 if not
-        const user = await User.findOne({ email: email }); // do not trim password from here yet as it is needed to be used for authentication
+        const user = await User.findOne({ email: { $eq: email } }); // do not trim password from here yet as it is needed to be used for authentication
 
         if (!user) {
             return sendErrorResponse(res, 404, "User not found");
