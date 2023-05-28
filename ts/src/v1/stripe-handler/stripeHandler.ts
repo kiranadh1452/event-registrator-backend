@@ -32,3 +32,38 @@ export const addNewCustomer = async (id: string, email: string) => {
         );
     }
 };
+
+/**
+ * description: get a customer
+ * @param {string} id - stripe id of the customer to be fetched
+ * @returns {object} customer
+ */
+export const getCustomer = async (id: string) => {
+    try {
+        const customer = await stripe.customers.retrieve(id);
+
+        return customer;
+    } catch (error: any) {
+        throw new Error(
+            `Error while fetching the customer with id '${id} : ${error.message}`
+        );
+    }
+};
+
+/**
+ * description: delete a stripe customer
+ * @param {string} id - stripe id of the customer to be fetched
+ * @returns {object} customer deletion status object
+ */
+export const deleteCustomer = async (id: string) => {
+    try {
+        const deleted = await stripe.customers.del(id);
+
+        return deleted;
+    } catch (error: any) {
+        console.error(error);
+        throw new Error(
+            `Error while deleting the customer with id '${id} : ${error.message}`
+        );
+    }
+};
