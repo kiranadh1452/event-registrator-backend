@@ -27,6 +27,8 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 14.x
+                  cache: "npm"
+                  cache-dependency-path: ts/package-lock.json
 
             - name: Start MongoDB
               uses: supercharge/mongodb-github-action@1.8.0
@@ -40,7 +42,7 @@ jobs:
             - name: Install dependencies
               run: |
                   cd ts
-                  npm install
+                  npm ci
 
             - name: Run tests
               run: |
