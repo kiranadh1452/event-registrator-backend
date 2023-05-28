@@ -59,7 +59,6 @@ export const userSchema: Schema<IUser> = new Schema<IUser>({
     password: {
         type: String,
         required: true,
-        validate: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
     },
     isAdmin: {
         type: Boolean,
