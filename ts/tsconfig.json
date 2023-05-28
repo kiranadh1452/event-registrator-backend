@@ -9,6 +9,6 @@
         "skipLibCheck": true /* Skip type checking all .d.ts files. */,
         "outDir": "./build" /* Redirect output structure to the directory. */
     },
-    "include": ["src/**/*", "./main.ts", "app.ts"],
+    "include": ["src/**/*", "tests/**/*", "./main.ts", "app.ts"],
     "exclude": ["node_modules"]
 }

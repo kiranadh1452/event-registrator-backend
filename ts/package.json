@@ -7,11 +7,12 @@
     "license": "ISC",
     "scripts": {
         "copy-config": "mkdir -p ./build/src/ && cp -r ./src/config ./build/src/",
-        "start": "node build/app.js",
         "build": "npx tsc && npm run copy-config",
         "clean": "rm -rf build",
         "dev": "concurrently \"npx tsc --watch\" \"npm run copy-config && nodemon -q build/app.js\"",
-        "clean-dev": "npm run clean && npm run dev"
+        "start": "npm run clean && npm run build && node build/app.js",
+        "clean-dev": "npm run clean && npm run dev",
+        "test": "npm run clean && npm run build && npx tape ./build/**/*.test.js"
     },
     "repository": {
         "type": "git",
@@ -22,6 +23,7 @@
     },
     "homepage": "https://github.com/kiranadh1452/event-registration-backend",
     "dependencies": {
+        "axios": "^1.4.0",
         "bcrypt": "^5.1.0",
         "body-parser": "^1.20.2",
         "dotenv": "^16.0.3",
