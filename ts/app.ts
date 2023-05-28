@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import express, { Express, Request, Response, NextFunction } from "express";
 
 // import database connection
-import connectDB from "./src/config/db.js";
+import connectDB, { closeDB } from "./src/config/db.js";
 
 // import the routes
 import UserRouter from "./src/v1/users/router.js";
@@ -16,9 +16,6 @@ import EventTypeRouter from "./src/v1/event-types/router.js";
 dotenv.config({
     path: "./src/config/config.env",
 });
-
-// connect to the database
-connectDB();
 
 // creating and configuring the app
 const port = process.env.PORT || 8000;
@@ -49,7 +46,16 @@ app.use("*", (req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-// starting the server
-app.listen(port, () => {
-    console.log(`App listening on port ${port}`);
-});
+export { app, connectDB, closeDB };
+
+// if this file is run directly, start the server
+if (require.main === module) {
+    // start the server only after the database connection is established
+    connectDB().then(() => {
+        console.log("Connected to database");
+
+        app.listen(app.get("port"), () => {
+            console.log(`App listening on port ${app.get("port")}`);
+        });
+    });
+}

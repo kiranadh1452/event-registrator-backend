@@ -1,4 +1,6 @@
-import mongoose, { Connection } from "mongoose";
+import mongoose, { Connection, Mongoose } from "mongoose";
+
+let connection: Mongoose;
 
 const connectDB = async (): Promise<void> => {
     try {
@@ -7,12 +9,23 @@ const connectDB = async (): Promise<void> => {
                 ? (process.env.MONGO_URI_OFFLINE as string)
                 : (process.env.MONGO_URI_ONLINE as string);
 
-        const connection = await mongoose.connect(url);
+        connection = await mongoose.connect(url);
         console.log(
             `Connected to database with host: ${connection.connection.host} and name: ${connection.connection.name}`
         );
     } catch (err: any) {
-        console.error(err);
+        throw new Error("Error while connecting to database : " + err.message);
+    }
+};
+
+export const closeDB = async (): Promise<void> => {
+    try {
+        await connection.disconnect();
+        console.log("Disconnected from database");
+    } catch (err: any) {
+        throw new Error(
+            "Error while disconnecting from database : " + err.message
+        );
     }
 };
 
