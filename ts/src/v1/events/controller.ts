@@ -42,7 +42,7 @@ export const createEventController = async (
             organizerId: res.locals.authData.uid,
         });
 
-        return sendSuccessResponse(res, 201, "Success", eventData);
+        return sendSuccessResponse(res, 201, "Event created successfully", eventData);
     } catch (error: any) {
         console.log(error);
         return sendErrorResponse(

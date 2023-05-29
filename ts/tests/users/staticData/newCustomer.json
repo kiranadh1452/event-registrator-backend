@@ -14,5 +14,17 @@
     "updates": {
         "lastName": "Adh",
         "phoneNumber": "9811111112"
+    },
+    "origin_2": {
+        "email": "newuser@gmail.com",
+        "firstName": "Kiran",
+        "lastName": "Adhikari",
+        "phoneNumber": "9811111111",
+        "address": "Pulchowk, Kathmandu",
+        "country": "np",
+        "zipCode": "34700",
+        "password": "test-password-123",
+        "is_admin": true,
+        "dateOfBirth": "2000-03-08"
     }
 }

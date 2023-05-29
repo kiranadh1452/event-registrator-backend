@@ -7,8 +7,10 @@ dotenv.config({
 import tape from "tape";
 import axios from "axios";
 
-import { app, closeDB, connectDB } from "../app.js";
-import RunAllUserTests from "./users/userTestHandler.js";
+import dropDatabase from "./databaseCleaner";
+import { app, closeDB, connectDB } from "../app";
+import RunAllUserTests from "./users/userTestHandler";
+import RunAllEventTests from "./events/eventTestHandler";
 
 const PORT = app.get("port");
 const baseUrl = `http://localhost:${PORT}`;
@@ -40,8 +42,11 @@ tape("Check for the server base test endpoint", async (t) => {
 
 // Run all user tests
 RunAllUserTests();
+RunAllEventTests();
 
 tape("Clean up", async (t) => {
     await closeDB();
+    await dropDatabase(process.env.MONGO_URI_OFFLINE as string);
+    console.log("Database dropped successfully");
     server.close();
 });
