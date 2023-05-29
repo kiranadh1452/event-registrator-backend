@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
+import Event from "./model";
 import {
     sendSuccessResponse,
     sendErrorResponse,
@@ -11,7 +12,8 @@ export const getAllEventsController = async (
     next: NextFunction
 ) => {
     try {
-        return sendErrorResponse(res, 501, "Not implemented");
+        const events = await Event.fetchEvents(req.query);
+        return sendSuccessResponse(res, 200, "Success", events);
     } catch (error: any) {
         console.log(error);
         return sendErrorResponse(
@@ -29,7 +31,18 @@ export const createEventController = async (
     next: NextFunction
 ) => {
     try {
-        return sendErrorResponse(res, 501, "Not implemented");
+        // This prevents from adding the organizer id from the request body
+        if (req.body.organizerId) delete req.body.organizerId;
+
+        console.log("Organizer id: ", res.locals.authData.uid);
+
+        // Add the current active user id as organizer id to the event data
+        const eventData = await Event.createEvent({
+            ...req.body,
+            organizerId: res.locals.authData.uid,
+        });
+
+        return sendSuccessResponse(res, 201, "Success", eventData);
     } catch (error: any) {
         console.log(error);
         return sendErrorResponse(

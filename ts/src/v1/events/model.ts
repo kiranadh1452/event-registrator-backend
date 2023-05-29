@@ -4,20 +4,14 @@ import mongoose, { Schema } from "mongoose";
 import { IEvent, IEventModel } from "./helpers/types";
 
 export const eventSchema: Schema<IEvent> = new Schema<IEvent>({
-    _id: {
-        type: String,
-        required: true,
-        index: true,
-        unique: true,
-    },
     productId: {
         type: String,
-        required: true,
-        index: true,
+        // required: true,
+        // index: true,
     },
     priceId: {
         type: String,
-        required: true,
+        // required: true,
     },
     oldPriceIds: {
         type: [String],
@@ -54,10 +48,11 @@ export const eventSchema: Schema<IEvent> = new Schema<IEvent>({
     location: {
         type: String,
         required: true,
+        index: "text",
         trim: true,
     },
     organizerId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: "User",
         required: true,
     },
@@ -82,7 +77,7 @@ export const eventSchema: Schema<IEvent> = new Schema<IEvent>({
         required: true,
         trim: true,
     },
-    event_type: {
+    eventType: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "EventType",
     },
@@ -110,12 +105,98 @@ eventSchema.pre<IEvent>("save", function (next) {
 
 // Fetch all events
 eventSchema.statics.fetchEvents = async function (queryParams) {
-    // TODO: implement fetchEvents
+    const {
+        search,
+        maxPrice,
+        minPrice,
+        startAfter,
+        endBefore,
+        location,
+        maxAge,
+        minAge,
+        createdBefore,
+        createdAfter,
+    } = queryParams;
+
+    const query: any = {};
+
+    if (search) {
+        query["$or"] = [
+            { name: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+        ];
+    }
+
+    if (maxPrice) {
+        query.price = { ...query.price, $lte: maxPrice };
+    }
+
+    if (minPrice) {
+        query.price = { ...query.price, $gte: minPrice };
+    }
+
+    if (startAfter) {
+        query.startTime = { ...query.startTime, $gte: startAfter };
+    }
+
+    if (endBefore) {
+        query.endTime = { ...query.endTime, $lte: endBefore };
+    }
+
+    if (location) {
+        query.location = { $regex: location, $options: "i" };
+    }
+
+    if (maxAge) {
+        query.maxAge = { $lte: maxAge };
+    }
+
+    if (minAge) {
+        query.minAge = { $gte: minAge };
+    }
+
+    if (createdBefore) {
+        query.created_at = { ...query.created_at, $lte: createdBefore };
+    }
+
+    if (createdAfter) {
+        query.created_at = { ...query.created_at, $gte: createdAfter };
+    }
+
+    const events: IEvent[] = await this.find(query)
+        .populate([
+            {
+                path: "organizerId",
+                select: "-password -__v -created_at -updated_at",
+            },
+            {
+                path: "eventType",
+                select: "-__v -created_at -updated_at",
+            },
+        ])
+        .exec();
+
+    return events;
 };
 
 // Create an event
 eventSchema.statics.createEvent = async function (eventData) {
-    // TODO: implement createEvent
+    // search by event name, location and (startTime or endTime) to check if event already exists
+    const { name, location, startTime, endTime } = eventData;
+
+    const event = await this.findOne({
+        name,
+        location,
+        $or: [{ startTime }, { endTime }],
+    }).exec();
+
+    if (event) {
+        throw new Error("Event already exists");
+    }
+
+    const newEvent = await this.create(eventData);
+
+    return newEvent;
 };
 
 // Delete an event

@@ -2,8 +2,8 @@ import { Document, Model, Schema } from "mongoose";
 
 export interface IEvent extends Document {
     _id: string;
-    productId: string;
-    priceId: string;
+    productId?: string;
+    priceId?: string;
     oldPriceIds: string[];
     name: string;
     description: string;
@@ -12,14 +12,14 @@ export interface IEvent extends Document {
     startTime: Date;
     endTime: Date;
     location: string;
-    organizerId: Schema.Types.ObjectId;
+    organizerId: string;
     maxAge?: number;
     minAge?: number;
     maxTickets?: number;
     ticketsSold: number;
     ticketsAvailable?: number;
     emergencyContact: string;
-    event_type?: Schema.Types.ObjectId;
+    eventType?: Schema.Types.ObjectId;
     created_at: Date;
     updated_at: Date;
 }
