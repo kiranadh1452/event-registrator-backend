@@ -7,5 +7,9 @@
         "location": "Amarsingh, Pokhara",
         "price": 10,
         "emergencyContact": "9821111111"
+    },
+    "update": {
+        "name": "Test Here",
+        "description": "This is the updated description"
     }
 }

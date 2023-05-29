@@ -232,6 +232,48 @@ export const getParticularEventById = () => {
     });
 };
 
+export const updateEvent = (updateData: any) => {
+    tape("Check for event update", async (t) => {
+        console.log("Starting test for event update by id :", createdEvent._id);
+        const url = `${baseUrl}/api/v1/events/${createdEvent._id}`;
+
+        try {
+            const response = await axios.put(url, updateData, {
+                headers: {
+                    Authorization: `Bearer ${createdUser.token}`,
+                },
+            });
+
+            t.equal(response.status, 200, "Status code should be 200");
+            t.equal(
+                response.data.message,
+                "Event updated successfully",
+                "Message should be 'Event updated successfully'"
+            );
+
+            const responseData = response.data.data;
+
+            // for all the fields present in both updateData and responseData, check if they are equal
+            Object.keys(updateData).forEach((key) => {
+                if (
+                    responseData[key] &&
+                    typeof responseData[key] !== "object"
+                ) {
+                    t.equal(
+                        updateData[key],
+                        responseData[key],
+                        `${key} should be equal`
+                    );
+                }
+            });
+
+            t.end();
+        } catch (error: any) {
+            t.error(error);
+        }
+    });
+};
+
 const clearUserData = () => {
     tape("Deleting the user data first", async (t) => {
         await deleteUser(createdUser.id, createdUser.token);
@@ -243,6 +285,7 @@ const runEventTests = async () => {
     eventCreationTest(customerDataJSON.origin_2);
     getAllEvents();
     getParticularEventById();
+    updateEvent(eventDataJSON.update);
     clearUserData();
 };
 

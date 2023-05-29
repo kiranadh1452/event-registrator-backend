@@ -91,7 +91,7 @@ export const updateEventByIdController = async (
         const { id } = req.params;
 
         if (!id || typeof id !== "string") {
-            return sendErrorResponse(res, 400, `Invalid user ID`);
+            return sendErrorResponse(res, 400, `Invalid event ID`);
         }
 
         const event = await Event.findById(id).exec();
@@ -104,7 +104,7 @@ export const updateEventByIdController = async (
         return sendSuccessResponse(
             res,
             200,
-            "User updated successfully",
+            "Event updated successfully",
             event
         );
     } catch (error: any) {
