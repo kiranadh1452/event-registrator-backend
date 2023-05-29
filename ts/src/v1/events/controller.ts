@@ -69,7 +69,7 @@ export const getEventByIdController = async (
         const id = req.params?.id || req.query?.id;
 
         // find the event by id
-        const event = await Event.findById(id);
+        const event = await Event.findOne({ _id: { $eq: id } }).exec();
         return sendSuccessResponse(res, 200, "Success", event);
     } catch (error: any) {
         console.log(error);

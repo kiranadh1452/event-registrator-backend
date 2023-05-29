@@ -21,7 +21,7 @@ export const isCurrentUserEventOrganizer = async (
         }
 
         // find the event by id
-        const event = await Event.findById(id);
+        const event = await Event.findOne({ _id: { $eq: id } }).exec();
 
         // if no event found, return 404
         if (!event) {
