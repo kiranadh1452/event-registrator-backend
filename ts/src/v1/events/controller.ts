@@ -42,7 +42,12 @@ export const createEventController = async (
             organizerId: res.locals.authData.uid,
         });
 
-        return sendSuccessResponse(res, 201, "Event created successfully", eventData);
+        return sendSuccessResponse(
+            res,
+            201,
+            "Event created successfully",
+            eventData
+        );
     } catch (error: any) {
         console.log(error);
         return sendErrorResponse(
@@ -60,7 +65,12 @@ export const getEventByIdController = async (
     next: NextFunction
 ) => {
     try {
-        return sendErrorResponse(res, 501, "Not implemented");
+        // get the id from the request object
+        const id = req.params?.id || req.query?.id;
+
+        // find the event by id
+        const event = await Event.findById(id);
+        return sendSuccessResponse(res, 200, "Success", event);
     } catch (error: any) {
         console.log(error);
         return sendErrorResponse(
@@ -78,7 +88,25 @@ export const updateEventByIdController = async (
     next: NextFunction
 ) => {
     try {
-        return sendErrorResponse(res, 501, "Not implemented");
+        const { id } = req.params;
+
+        if (!id || typeof id !== "string") {
+            return sendErrorResponse(res, 400, `Invalid user ID`);
+        }
+
+        const event = await Event.findById(id).exec();
+        if (!event) {
+            return sendErrorResponse(res, 404, `Event with id ${id} not found`);
+        }
+
+        await event.updateEvent(req.body);
+
+        return sendSuccessResponse(
+            res,
+            200,
+            "User updated successfully",
+            event
+        );
     } catch (error: any) {
         console.log(error);
         return sendErrorResponse(

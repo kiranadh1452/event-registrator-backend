@@ -102,6 +102,47 @@ eventSchema.pre<IEvent>("save", function (next) {
     next();
 });
 
+// Methods
+// Update the event
+eventSchema.methods.updateEvent = async function (
+    this: IEvent,
+    updateProps: Partial<IEvent>
+): Promise<IEvent> {
+    let eventToUpdate: any = this;
+
+    // What are the fields that we want to exculde being updated?
+    const protectedFields: Array<keyof IEvent> = [
+        "_id",
+        "productId",
+        "priceId",
+        "created_at",
+        "updated_at",
+        "ticketsSold",
+        "ticketsAvailable",
+        "oldPrices",
+        "oldPriceIds",
+        "organizerId",
+    ];
+
+    Object.keys(updateProps).forEach((key: string) => {
+        const eventKey = key as keyof IEvent;
+
+        // Only update the field if it's not a protected field
+        if (
+            !protectedFields.includes(eventKey) &&
+            updateProps[eventKey] !== undefined
+        ) {
+            eventToUpdate[eventKey] = updateProps[eventKey];
+        }
+    });
+
+    // Update the updated_at field
+    eventToUpdate.updated_at = new Date();
+
+    // Save and return the event
+    return await (eventToUpdate as IEvent).save();
+};
+
 /**
  * @Static_Methods for eventSchema
  */

@@ -22,6 +22,10 @@ export interface IEvent extends Document {
     eventType?: Schema.Types.ObjectId;
     created_at: Date;
     updated_at: Date;
+    updateEvent: (
+        this: IEvent,
+        updateProps: Partial<IEvent>
+    ) => Promise<IEvent>;
 }
 
 export interface IEventModel extends Model<IEvent> {

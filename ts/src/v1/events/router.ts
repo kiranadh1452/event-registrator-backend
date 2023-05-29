@@ -18,6 +18,7 @@ import {
     dataFormatValidation,
     validationResultHandler,
     nonEmptyValidation,
+    nonEmptyPlusDataValidation,
 } from "../validation-middlewares/dataFormatValidation.js";
 
 import {
@@ -61,16 +62,36 @@ EventRouter.post(
 );
 
 // GET a specific event by ID
-EventRouter.get("/:id", getEventByIdController);
+EventRouter.get(
+    "/:id",
+    sanitizeData(["id"]),
+    nonEmptyPlusDataValidation(["id"]),
+    validationResultHandler,
+    getEventByIdController
+);
 
 // PUT update an existing event by ID
-EventRouter.put("/:id", isCurrentUserEventOrganizer, updateEventByIdController);
+EventRouter.put(
+    "/:id",
+    sanitizeData(AllFieldsInEvent),
+    isCurrentUserEventOrganizer,
+    nonEmptyPlusDataValidation(["id"]),
+    dataFormatValidation(AllFieldsInEvent),
+    validationResultHandler,
+    updateEventByIdController
+);
 
 // DELETE an existing event by ID
 EventRouter.delete(
     "/:id",
     isCurrentUserEventOrganizer,
-    deleteEventByIdController
+    (req: Request, res: Response) => {
+        return res.status(403).json({
+            code: 403,
+            message: "Currently, deleting an event is forbidden",
+        });
+    },
+    deleteEventByIdController // this part is unreachable for now
 );
 
 export default EventRouter;
