@@ -1,3 +1,9 @@
+// get env vars before anything else
+import * as dotenv from "dotenv";
+dotenv.config({
+    path: "./src/config/config.env",
+});
+
 import tape from "tape";
 import axios from "axios";
 

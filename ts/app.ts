@@ -25,7 +25,7 @@ const app: Express = express();
 // setting rate limit
 const limiter = RateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: process.env.MODE == "dev" ? 5 : 1000,
+    max: process.env.MODE !== "dev" ? 10 : 1000,
 });
 
 app.use(limiter);
