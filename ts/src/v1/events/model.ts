@@ -3,6 +3,9 @@ import mongoose, { Schema } from "mongoose";
 // importing types
 import { IEvent, IEventModel } from "./helpers/types";
 
+// import event emitter
+import EventEvents from "./helpers/eventsHandler";
+
 export const eventSchema: Schema<IEvent> = new Schema<IEvent>({
     productId: {
         type: String,
@@ -195,6 +198,9 @@ eventSchema.statics.createEvent = async function (eventData) {
     }
 
     const newEvent = await this.create(eventData);
+
+    // Emit an event created event
+    EventEvents.emit("event.created", newEvent);
 
     return newEvent;
 };
