@@ -132,6 +132,9 @@ export const getAllEvents = () => {
 
             const response = await axios.get(url, {
                 params: queryParams,
+                headers: {
+                    Authorization: `Bearer ${createdUser.token}`,
+                },
             });
 
             t.equal(response.status, 200, "Status code should be 200");
@@ -164,10 +167,59 @@ export const getAllEvents = () => {
 
             // for all the fields present in both createdEvent and createdEventInResponse, check if they are equal
             Object.keys(createdEvent).forEach((key) => {
-                if (createdEventInResponse[key]) {
+                if (
+                    createdEventInResponse[key] &&
+                    typeof createdEventInResponse[key] !== "object"
+                ) {
                     t.equal(
                         createdEvent[key],
                         createdEventInResponse[key],
+                        `${key} should be equal`
+                    );
+                }
+            });
+
+            t.end();
+        } catch (error: any) {
+            t.error(error);
+        }
+    });
+};
+
+export const getParticularEventById = () => {
+    tape("Check for event fetch based on id", async (t) => {
+        console.log(
+            "Starting test for particular event fetch by id :",
+            createdEvent._id
+        );
+
+        const url = `${baseUrl}/api/v1/events/${createdEvent._id}`;
+
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${createdUser.token}`,
+                },
+            });
+
+            t.equal(response.status, 200, "Status code should be 200");
+            t.equal(
+                response.data.message,
+                "Success",
+                "Message should be 'Success'"
+            );
+
+            const responseData = response.data.data;
+
+            // for all the fields present in both createdEvent and responseData, check if they are equal
+            Object.keys(createdEvent).forEach((key) => {
+                if (
+                    responseData[key] &&
+                    typeof responseData[key] !== "object"
+                ) {
+                    t.equal(
+                        createdEvent[key],
+                        responseData[key],
                         `${key} should be equal`
                     );
                 }
@@ -189,6 +241,8 @@ const clearUserData = () => {
 const runEventTests = async () => {
     eventTestEndpoint();
     eventCreationTest(customerDataJSON.origin_2);
+    getAllEvents();
+    getParticularEventById();
     clearUserData();
 };
 

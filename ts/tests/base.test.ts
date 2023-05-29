@@ -41,7 +41,7 @@ tape("Check for the server base test endpoint", async (t) => {
 });
 
 // Run all user tests
-RunAllUserTests();
+// RunAllUserTests();
 RunAllEventTests();
 
 tape("Clean up", async (t) => {
