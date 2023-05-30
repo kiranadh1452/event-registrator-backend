@@ -2,8 +2,8 @@
     "origin": {
         "name": "Test Program Hereeeeeee",
         "description": "Plant tree, all for free",
-        "startTime": "2023 June 12 15:45",
-        "endTime": "2023 June 12 17:30",
+        "startTime": "2023-06-12T10:00:00.000Z",
+        "endTime": "2023-06-12T11:45:00.000Z",
         "location": "Amarsingh, Pokhara",
         "price": 10,
         "emergencyContact": "9821111111"

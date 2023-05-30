@@ -155,7 +155,7 @@ eventSchema.statics.fetchEvents = async function (queryParams) {
         minPrice,
         startAfter,
         endBefore,
-        location,
+        location_search,
         maxAge,
         minAge,
         createdBefore,
@@ -187,8 +187,8 @@ eventSchema.statics.fetchEvents = async function (queryParams) {
         query.endTime = { ...query.endTime, $lte: endBefore };
     }
 
-    if (location) {
-        query.location = { $regex: location, $options: "i" };
+    if (location_search) {
+        query.location = { $regex: location_search, $options: "i" };
     }
 
     if (maxAge) {

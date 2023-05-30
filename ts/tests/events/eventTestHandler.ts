@@ -124,7 +124,7 @@ export const getAllEvents = () => {
 
         try {
             const queryParams = {
-                loaction: createdEvent?.location,
+                location_search: createdEvent?.location,
                 search: createdEvent?.name,
                 minPrice: createdEvent?.price - 1,
                 maxPrice: createdEvent?.price + 1,

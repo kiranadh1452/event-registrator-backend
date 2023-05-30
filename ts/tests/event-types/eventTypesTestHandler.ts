@@ -84,7 +84,6 @@ export const createNewEventTypeTest = (
                 userData.password
             );
             createdUser.token = idToken;
-            console.log(idToken);
 
             // create a new event type
             const response = await axios.post(url, eventTypeData, {

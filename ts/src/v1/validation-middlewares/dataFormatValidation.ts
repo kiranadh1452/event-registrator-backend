@@ -79,12 +79,27 @@ export const dataFormatValidation = (dataArray: Array<String>) => {
                             .optional()
                             .isLength({ min: 2, max: 20 })
                             .withMessage(
-                                "Name must be at between 2 to 20 characters"
+                                `${data} must be at between 2 to 20 characters`
+                            )
+                    );
+                    break;
+
+                // text indexes
+                case "name":
+                case "search":
+                case "location_search":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isLength({ min: 2, max: 50 })
+                            .withMessage(
+                                `Search index ${data} must be at between 2 to 50 characters`
                             )
                     );
                     break;
 
                 case "phoneNumber":
+                case "emergencyContact":
                     validations.push(
                         check(data as string)
                             .optional()
@@ -149,6 +164,7 @@ export const dataFormatValidation = (dataArray: Array<String>) => {
                 case "description":
                 case "address":
                 case "company_address":
+                case "location":
                     validations.push(
                         check(data as string)
                             .optional()
@@ -163,10 +179,14 @@ export const dataFormatValidation = (dataArray: Array<String>) => {
                 case "subscription_id":
                 case "userId":
                 case "payment_intent":
+                case "eventType":
+                case "productId":
+                case "priceId":
+                case "createdBy":
                     validations.push(
                         check(data as string)
                             .optional()
-                            .isLength({ min: 10, max: 64 })
+                            .isLength({ min: 8, max: 64 })
                             .withMessage("Invalid ID")
                     );
                     break;
@@ -177,6 +197,58 @@ export const dataFormatValidation = (dataArray: Array<String>) => {
                             .optional()
                             .matches(/^[0-9]{5}(?:-[0-9]{4})?$/)
                             .withMessage("Invalid zip code format")
+                    );
+                    break;
+
+                case "price":
+                case "maxPrice":
+                case "minPrice":
+                case "maxAge":
+                case "minAge":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isNumeric()
+                            .withMessage(`Invalid format for ${data}`)
+                    );
+                    break;
+
+                case "maxTickets":
+                case "ticketsSold":
+                case "ticketsAvailable":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isInt({ min: 0 })
+                            .withMessage(`Invalid format for ${data}`)
+                    );
+                    break;
+
+                case "createdBefore":
+                case "createdAfter":
+                case "created_at":
+                case "updated_at":
+                case "startAfter":
+                case "endBefore":
+                case "startTime":
+                case "endTime":
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isISO8601()
+                            .withMessage(`Invalid format for ${data}`)
+                    );
+                    break;
+
+                case "oldPriceIds":
+                case "oldPrices":
+                    // check that it is an array
+                    // these values aren't used anywhere, so it's okay to just check that it's an array
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isArray()
+                            .withMessage(`Invalid format for ${data}`)
                     );
                     break;
 

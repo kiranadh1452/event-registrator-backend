@@ -17,7 +17,7 @@ export const EventQueryFields = [
     "minPrice",
     "startAfter",
     "endBefore",
-    "location",
+    "location_search",
     "maxAge",
     "minAge",
     "createdBefore",

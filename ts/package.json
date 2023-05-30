@@ -12,7 +12,8 @@
         "dev": "concurrently \"npx tsc --watch\" \"npm run copy-config && nodemon -q build/app.js\"",
         "start": "npm run clean && npm run build && node build/app.js",
         "clean-dev": "npm run clean && npm run dev",
-        "test": "npm run clean && npm run build && npx tape ./build/**/*.test.js | tap-mocha-reporter spec"
+        "test": "npm run clean && npm run build && npx tape ./build/**/*.test.js | tap-mocha-reporter spec",
+        "test-raw": "npm run clean && npm run build && npx tape ./build/**/*.test.js"
     },
     "repository": {
         "type": "git",
