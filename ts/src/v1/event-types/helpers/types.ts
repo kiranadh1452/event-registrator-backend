@@ -4,7 +4,7 @@ export interface IEventType extends Document {
     _id: string;
     name: string;
     description: string;
-    createdBy: string;
+    createdBy?: string;
     created_at: Date;
     updated_at: Date;
 }

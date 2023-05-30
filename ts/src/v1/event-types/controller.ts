@@ -1,9 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 
+import EventType from "./model";
+
 import {
     sendSuccessResponse,
     sendErrorResponse,
 } from "./helpers/responseHandler";
+import { IEventType } from "./helpers/types";
 
 export const getAllEventTypesController = async (
     req: Request,
@@ -11,9 +14,15 @@ export const getAllEventTypesController = async (
     next: NextFunction
 ) => {
     try {
-        return sendErrorResponse(res, 501, "Not implemented");
-    } catch (error) {
-        return sendErrorResponse(res, 500, "Internal server error");
+        const eventTypes = await EventType.fetchEventTypes(req.query);
+        return sendSuccessResponse(res, 200, "Success", eventTypes);
+    } catch (error: any) {
+        return sendErrorResponse(
+            res,
+            500,
+            "Internal server error",
+            error.message
+        );
     }
 };
 
@@ -23,9 +32,23 @@ export const createEventTypeController = async (
     next: NextFunction
 ) => {
     try {
-        return sendErrorResponse(res, 501, "Not implemented");
-    } catch (error) {
-        return sendErrorResponse(res, 500, "Internal server error");
+        // get the current user id
+        const userId = res.locals?.authData?.uid;
+
+        // create a new event type
+        const newEventType = await EventType.createEventType({
+            ...req.body,
+            createdBy: userId,
+        });
+
+        return sendSuccessResponse(res, 201, "Success", newEventType);
+    } catch (error: any) {
+        return sendErrorResponse(
+            res,
+            500,
+            "Internal server error",
+            error.message
+        );
     }
 };
 
@@ -36,8 +59,13 @@ export const getEventTypeByIdController = async (
 ) => {
     try {
         return sendErrorResponse(res, 501, "Not implemented");
-    } catch (error) {
-        return sendErrorResponse(res, 500, "Internal server error");
+    } catch (error: any) {
+        return sendErrorResponse(
+            res,
+            500,
+            "Internal server error",
+            error.message
+        );
     }
 };
 
@@ -48,8 +76,13 @@ export const updateEventTypeByIdController = async (
 ) => {
     try {
         return sendErrorResponse(res, 501, "Not implemented");
-    } catch (error) {
-        return sendErrorResponse(res, 500, "Internal server error");
+    } catch (error: any) {
+        return sendErrorResponse(
+            res,
+            500,
+            "Internal server error",
+            error.message
+        );
     }
 };
 
@@ -60,7 +93,12 @@ export const deleteEventTypeByIdController = async (
 ) => {
     try {
         return sendErrorResponse(res, 501, "Not implemented");
-    } catch (error) {
-        return sendErrorResponse(res, 500, "Internal server error");
+    } catch (error: any) {
+        return sendErrorResponse(
+            res,
+            500,
+            "Internal server error",
+            error.message
+        );
     }
 };
