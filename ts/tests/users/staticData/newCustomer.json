@@ -26,5 +26,17 @@
         "password": "test-password-123",
         "is_admin": true,
         "dateOfBirth": "2000-03-08"
+    },
+    "origin_3": {
+        "email": "newuser1@gmail.com",
+        "firstName": "Kiran",
+        "lastName": "Adhikari",
+        "phoneNumber": "9811111111",
+        "address": "Pulchowk, Kathmandu",
+        "country": "np",
+        "zipCode": "34700",
+        "password": "test-password-123",
+        "is_admin": true,
+        "dateOfBirth": "2000-03-08"
     }
 }

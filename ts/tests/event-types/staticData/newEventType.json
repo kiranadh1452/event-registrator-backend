@@ -1,0 +1,10 @@
+{
+    "origin": {
+        "name": "In House",
+        "description": "In house events are those that would happen physically"
+    },
+    "origin_2": {
+        "name": "Online",
+        "description": "Online events are those that would happen virtually"
+    }
+}
