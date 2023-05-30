@@ -186,6 +186,123 @@ export const getAllEventTypes = () => {
     });
 };
 
+export const getParticularEventById = () => {
+    tape("Check for particular event type", async (t) => {
+        const url = `${baseUrl}/api/v1/event-types/${createdEventType._id}`;
+
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${createdUser.token}`,
+                },
+            });
+
+            t.equal(response.status, 200, "Status code should be 200");
+            t.equal(
+                response.data.message,
+                "Success",
+                "Message should be 'Success'"
+            );
+
+            const responseData = response.data.data;
+
+            // responseData should be an object
+            t.equal(
+                typeof responseData === "object",
+                true,
+                "Response data should be an object"
+            );
+
+            // for all the fields present in both createdEventType and responseData
+            // check if the values are same
+            Object.keys(createdEventType).forEach((key) => {
+                if (
+                    responseData[key] &&
+                    typeof responseData[key] !== "object"
+                ) {
+                    t.equal(
+                        responseData[key],
+                        createdEventType[key],
+                        `${key} should be the same`
+                    );
+                }
+            });
+
+            t.end();
+        } catch (error: any) {
+            t.error(error);
+        }
+    });
+};
+
+export const updateEventType = (
+    dataToUpdate: any = eventTypeDataJSON.origin_updated
+) => {
+    tape("Check for updating an event type", async (t) => {
+        console.log("Checking now for updating an event type");
+
+        const url = `${baseUrl}/api/v1/event-types/${createdEventType._id}`;
+
+        try {
+            const response = await axios.put(url, dataToUpdate, {
+                headers: {
+                    Authorization: `Bearer ${createdUser.token}`,
+                },
+            });
+
+            t.equal(response.status, 200, "Status code should be 200");
+            t.equal(
+                response.data.message,
+                "Success",
+                "Message should be 'Success'"
+            );
+
+            const responseData = response.data.data;
+
+            // responseData should be an object
+            t.equal(
+                typeof responseData === "object",
+                true,
+                "Response data should be an object"
+            );
+
+            // for all the fields present in dataToUpdate,
+            // check if the response values are same
+            Object.keys(dataToUpdate).forEach((key) => {
+                if (typeof responseData[key] !== "object") {
+                    t.equal(
+                        responseData[key],
+                        dataToUpdate[key],
+                        `${key} should be the same`
+                    );
+                }
+            });
+
+            // for remaining fields which are not in dataToUpdate, check if the values in responseData are same to that of original event-type, i.e. createdEventType
+            const fieldsToIgnoreOnEventTypeUpdate = [
+                ...Object.keys(dataToUpdate),
+                "updated_at",
+            ];
+            Object.keys(createdEventType).forEach((key) => {
+                if (
+                    !fieldsToIgnoreOnEventTypeUpdate.includes(key) &&
+                    typeof responseData[key] !== "object"
+                ) {
+                    t.equal(
+                        responseData[key],
+                        createdEventType[key],
+                        `${key} should be the same`
+                    );
+                }
+            });
+
+            t.end();
+        } catch (error: any) {
+            t.error(error);
+        }
+    });
+};
+
 const clearUserData = () => {
     tape("Deleting the user data first", async (t) => {
         await helpers.deleteUser(createdUser.id, createdUser.token);
@@ -196,6 +313,8 @@ const runEventTypesTest = async () => {
     eventTypeTestEndpoint();
     createNewEventTypeTest();
     getAllEventTypes();
+    getParticularEventById();
+    updateEventType();
     clearUserData();
 };
 
