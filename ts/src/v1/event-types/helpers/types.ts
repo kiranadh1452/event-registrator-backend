@@ -7,6 +7,10 @@ export interface IEventType extends Document {
     createdBy?: string;
     created_at: Date;
     updated_at: Date;
+    updateEventType: (
+        this: IEventType,
+        updateProps: Partial<IEventType>
+    ) => Promise<IEventType>;
 }
 
 export interface IEventTypeModel extends Model<IEventType> {

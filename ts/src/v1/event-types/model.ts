@@ -34,6 +34,39 @@ eventTypeSchema.pre<IEventType>("save", function (next) {
     return next();
 });
 
+//Methods:
+eventTypeSchema.methods.updateEventType = async function (
+    this: IEventType,
+    updateProps: Partial<IEventType>
+) {
+    let eventTypeToUpdate: any = this;
+
+    // What are the fields that we want to exculde being updated?
+    const protectedFields: Array<keyof IEventType> = [
+        "_id",
+        "created_at",
+        "updated_at",
+    ];
+
+    Object.keys(updateProps).forEach((key: string) => {
+        const eventTypeKey = key as keyof IEventType;
+
+        // Only update the field if it's not a protected field
+        if (
+            !protectedFields.includes(eventTypeKey) &&
+            updateProps[eventTypeKey] !== undefined
+        ) {
+            eventTypeToUpdate[eventTypeKey] = updateProps[eventTypeKey];
+        }
+    });
+
+    // Update the updated_at field
+    eventTypeToUpdate.updated_at = new Date();
+
+    // Save and return the event
+    return await (eventTypeToUpdate as IEventType).save();
+};
+
 /**
  * @Static_Methods for EventType Schema
  */
