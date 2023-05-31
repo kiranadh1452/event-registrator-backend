@@ -13,6 +13,12 @@ export const ticketSchema: Schema<ITicket> = new Schema<ITicket>({
         ref: "Event",
         required: true,
     },
+    organizerId: {
+        type: String,
+        ref: "User",
+        required: true,
+        index: true,
+    },
     quantity: {
         type: Number,
         default: 1,
@@ -147,7 +153,7 @@ ticketSchema.statics.fetchTickets = async function (
 ticketSchema.statics.createTicket = async function (
     ticketData: any
 ): Promise<ITicket> {
-    const { eventId, userId, priceId } = ticketData;
+    const { eventId, userId, priceId, organizerId } = ticketData;
 
     // search if a ticket with the same event id and user id exists
     const existingTicket = await Ticket.findOne({
@@ -165,6 +171,7 @@ ticketSchema.statics.createTicket = async function (
     const newTicket = await this.create({
         ...desiredData,
         eventId,
+        organizerId,
     });
 
     return newTicket;

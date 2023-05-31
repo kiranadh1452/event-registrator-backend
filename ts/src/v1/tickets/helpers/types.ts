@@ -3,6 +3,7 @@ import { Document, Model, Schema } from "mongoose";
 export interface ITicket extends Document {
     _id: string;
     eventId: Schema.Types.ObjectId;
+    organizerId: string;
     quantity?: number;
     type?: string;
     status?: "open" | "complete" | "expired";

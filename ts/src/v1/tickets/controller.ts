@@ -72,6 +72,7 @@ export const createTicketController = async (
         const ticketData = await Ticket.createTicket({
             ...req.body,
             userId,
+            organizerId: event.organizerId,
             priceId: event.priceId,
         });
 
@@ -100,7 +101,22 @@ export const getTicketByIdController = async (
     next: NextFunction
 ) => {
     try {
-        return sendErrorResponse(res, 501, "Not implemented");
+        const ticket = await Ticket.findOne({
+            _id: { $eq: req.params.id },
+        });
+
+        if (!ticket) {
+            return sendErrorResponse(res, 404, "Ticket not found");
+        }
+
+        const userid = res.locals?.authData?.uid;
+
+        // check whether user id is the ticket owner or the organizer of the event
+        if (ticket.userId !== userid && ticket.organizerId !== userid) {
+            return sendErrorResponse(res, 403, "Forbidden");
+        }
+
+        return sendSuccessResponse(res, 200, "Success", ticket);
     } catch (error: any) {
         return sendErrorResponse(res, 500, "Internal Server Error");
     }
