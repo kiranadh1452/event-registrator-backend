@@ -1,5 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { sendErrorResponse } from "./helpers/responseHandler";
+import {
+    sendErrorResponse,
+    sendSuccessResponse,
+} from "./helpers/responseHandler";
+
+import Ticket from "./model";
 
 // get all tickets
 export const getTicketsController = async (
@@ -8,7 +13,8 @@ export const getTicketsController = async (
     next: NextFunction
 ) => {
     try {
-        return sendErrorResponse(res, 501, "Not implemented");
+        const tickets = await Ticket.fetchTickets(req.query);
+        return sendSuccessResponse(res, 200, "Success", tickets);
     } catch (error: any) {
         return sendErrorResponse(res, 500, "Internal Server Error");
     }

@@ -101,8 +101,37 @@ ticketSchema.methods.updateTicket = async function (
 ticketSchema.statics.fetchTickets = async function (
     queryParams: any
 ): Promise<ITicket[]> {
-    // TODO: Implement this
-    const tickets: ITicket[] = []; // = await this.find();
+    const { userId, eventId, oraganizerId, type, ticketStatus, paymentStatus } =
+        queryParams;
+
+    const query: any = {};
+
+    // formulate query with the given params
+    {
+        if (userId) {
+            query.userId = userId;
+        }
+
+        if (eventId) {
+            query.eventId = eventId;
+        }
+
+        if (oraganizerId) {
+            query.oraganizerId = oraganizerId;
+        }
+
+        if (type) {
+            query.type = type;
+        }
+
+        if (ticketStatus) {
+            query.ticketStatus = ticketStatus;
+        }
+    }
+
+    const tickets: ITicket[] = await this.find(query, {
+        __v: 0,
+    });
 
     return tickets;
 };
