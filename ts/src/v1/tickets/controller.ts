@@ -7,6 +7,9 @@ import {
 import Ticket from "./model";
 import Event from "../events/model";
 
+const isDevMode =
+    process.env.MODE?.toLocaleLowerCase()?.trim() === "dev" ? true : false;
+
 // get all tickets
 export const getTicketsController = async (
     req: Request,
@@ -36,7 +39,7 @@ export const createTicketController = async (
 
         // see if the event is a valid one
         const event = await Event.findOne({ _id: { $eq: req.body.eventId } });
-        if (!event || !event.priceId) {
+        if (!event || (!event.priceId && !isDevMode)) {
             return sendErrorResponse(res, 404, "Event or price not found");
         }
 
@@ -48,7 +51,24 @@ export const createTicketController = async (
             return sendErrorResponse(res, 409, "Ticket limit reached");
         }
 
-        // issue a new ticket
+        // TEST PURPOSES ONLY
+        if (isDevMode) {
+            console.log(
+                "Skipping actual ticket issue from stripe for test mode"
+            );
+            return sendSuccessResponse(
+                res,
+                201,
+                "Dummy Ticket created successfully for test",
+                {
+                    ...req.body,
+                    userId,
+                    priceId: event.priceId,
+                }
+            );
+        }
+
+        // issue a new ticket through stripe
         const ticketData = await Ticket.createTicket({
             ...req.body,
             userId,
