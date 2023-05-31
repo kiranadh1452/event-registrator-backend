@@ -18,8 +18,8 @@ EventEvents.on("event.created", async (event: IEvent) => {
 
         const product = await createNewProductAndPrice(
             productId,
-            event._id,
             event.name,
+            event.description,
             event.price
         );
         console.log("Product created in stripe: ", product);
