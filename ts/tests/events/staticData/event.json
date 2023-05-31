@@ -11,5 +11,14 @@
     "update": {
         "name": "Test Here",
         "description": "This is the updated description"
+    },
+    "origin_2": {
+        "name": "Plantation program",
+        "description": "Plant tree, all for free",
+        "startTime": "2023-06-12T10:00:00.000Z",
+        "endTime": "2023-06-12T11:45:00.000Z",
+        "location": "Amarsingh, Pokhara",
+        "price": 10,
+        "emergencyContact": "9821111111"
     }
 }

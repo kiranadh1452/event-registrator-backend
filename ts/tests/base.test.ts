@@ -11,6 +11,7 @@ import dropDatabase from "./databaseCleaner";
 import { app, closeDB, connectDB } from "../app";
 import RunAllUserTests from "./users/userTestHandler";
 import RunAllEventTests from "./events/eventTestHandler";
+import RunAllTicketTests from "./tickets/ticketTestHandler";
 import RunAllEventTypeTests from "./event-types/eventTypesTestHandler";
 
 const PORT = app.get("port");
@@ -45,6 +46,7 @@ tape("Check for the server base test endpoint", async (t) => {
 RunAllUserTests();
 RunAllEventTests();
 RunAllEventTypeTests();
+RunAllTicketTests();
 
 tape("Clean up", async (t) => {
     await closeDB();
