@@ -94,10 +94,16 @@ export const updateEventByIdController = async (
             return sendErrorResponse(res, 400, `Invalid event ID`);
         }
 
+        /**
+         * Instead of re-fetching the event from the database, use the event object provided by the middleware `isCurrentUserEventOrganizer`
+         */
+        const event = res.locals.current_event;
+        /** Otherwise, this would be the way to do it
         const event = await Event.findById(id).exec();
         if (!event) {
             return sendErrorResponse(res, 404, `Event with id ${id} not found`);
         }
+        */
 
         await event.updateEvent(req.body);
 

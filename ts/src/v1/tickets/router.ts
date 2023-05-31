@@ -37,6 +37,8 @@ TicketRouter.use(ticketMiddleware.userAuthenticatorForTicketsMiddleware);
 // GET all tickets
 TicketRouter.get(
     "/",
+    ticketMiddleware.isRequestingUserAllowedToQuery,
+    // user can either query across all the tickets they issues, or all the tickets for events they are oraganizer of
     sanitizeData(DataFields.TicketQueryFields),
     dataFormatValidation(DataFields.TicketQueryFields),
     validationResultHandler,
