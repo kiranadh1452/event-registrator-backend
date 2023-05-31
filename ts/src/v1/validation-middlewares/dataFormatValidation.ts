@@ -87,6 +87,7 @@ export const dataFormatValidation = (dataArray: Array<String>) => {
                 // text indexes
                 case "name":
                 case "search":
+                case "type": // for now, type has to be a string. If there are multi types, we can change this to enum
                 case "location_search":
                     validations.push(
                         check(data as string)
@@ -176,6 +177,8 @@ export const dataFormatValidation = (dataArray: Array<String>) => {
                     break;
 
                 case "id":
+                case "eventId":
+                case "oraganizerId":
                 case "subscription_id":
                 case "userId":
                 case "payment_intent":
@@ -248,6 +251,26 @@ export const dataFormatValidation = (dataArray: Array<String>) => {
                         check(data as string)
                             .optional()
                             .isArray()
+                            .withMessage(`Invalid format for ${data}`)
+                    );
+                    break;
+
+                case "paymentStatus":
+                    // check that payment status is one of "paid" | "unpaid" | "no_payment_required"
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isIn(["paid", "unpaid", "no_payment_required"])
+                            .withMessage(`Invalid format for ${data}`)
+                    );
+                    break;
+
+                case "status":
+                    // check that status is one of "open" | "complete" | "expired"
+                    validations.push(
+                        check(data as string)
+                            .optional()
+                            .isIn(["open", "complete", "expired"])
                             .withMessage(`Invalid format for ${data}`)
                     );
                     break;
