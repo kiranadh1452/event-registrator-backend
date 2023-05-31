@@ -2,6 +2,10 @@ import mongoose, { Schema } from "mongoose";
 
 // importing types
 import { ITicket, ITicketModel } from "./helpers/types";
+import {
+    createNewCheckoutSession,
+    getDesiredDataFromCheckoutSession,
+} from "../stripe-handler/stripeHandler";
 
 export const ticketSchema: Schema<ITicket> = new Schema<ITicket>({
     eventId: {
@@ -101,7 +105,7 @@ ticketSchema.methods.updateTicket = async function (
 ticketSchema.statics.fetchTickets = async function (
     queryParams: any
 ): Promise<ITicket[]> {
-    const { userId, eventId, oraganizerId, type, ticketStatus, paymentStatus } =
+    const { userId, eventId, oraganizerId, type, status, paymentStatus } =
         queryParams;
 
     const query: any = {};
@@ -124,8 +128,12 @@ ticketSchema.statics.fetchTickets = async function (
             query.type = type;
         }
 
-        if (ticketStatus) {
-            query.ticketStatus = ticketStatus;
+        if (status) {
+            query.status = status;
+        }
+
+        if (paymentStatus) {
+            query.paymentStatus = paymentStatus;
         }
     }
 
@@ -139,8 +147,27 @@ ticketSchema.statics.fetchTickets = async function (
 ticketSchema.statics.createTicket = async function (
     ticketData: any
 ): Promise<ITicket> {
-    // TODO: Implement this
-    return ticketData as ITicket;
+    const { eventId, userId, priceId } = ticketData;
+
+    // search if a ticket with the same event id and user id exists
+    const existingTicket = await Ticket.findOne({
+        eventId: { $eq: eventId },
+        userId: { $eq: userId },
+    });
+    if (existingTicket) {
+        throw new Error("Ticket already exists");
+    }
+
+    // create a checkout session
+    const session = await createNewCheckoutSession(priceId, userId);
+    const desiredData = getDesiredDataFromCheckoutSession(session);
+
+    const newTicket = await this.create({
+        ...desiredData,
+        eventId,
+    });
+
+    return newTicket;
 };
 
 ticketSchema.statics.deleteTicket = async function (

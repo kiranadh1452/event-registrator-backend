@@ -188,3 +188,82 @@ export const createNewProductAndPrice = async (
         );
     }
 };
+
+export const createNewCheckoutSession = async (
+    priceId: string, // should be Stripe.Price but apparently their TS Type-declaration does not support it
+    customerId: string, // should be Stripe.Customer but apparently their TS Type-declaration does not support it
+    quantity: number = 1
+) => {
+    try {
+        const session = await stripe.checkout.sessions.create({
+            line_items: [
+                {
+                    price: priceId,
+                    quantity,
+                },
+            ],
+            customer: customerId as string,
+            success_url: process.env.SUCCESS_URL_PAYMENT as string,
+            mode: "payment",
+            metadata: {
+                customerId,
+                priceId,
+            },
+        });
+
+        return session;
+    } catch (error: any) {
+        throw new Error(
+            `Error while creating checkout session, ${error.message}`
+        );
+    }
+};
+
+export const getDesiredDataFromCheckoutSession = (
+    checkoutSessionObj: Stripe.Checkout.Session
+) => {
+    try {
+        const {
+            id,
+            amount_total,
+            created,
+            currency,
+            customer,
+            customer_email,
+            customer_details,
+            payment_intent,
+            payment_status,
+            total_details,
+            metadata,
+            status,
+            url,
+        } = checkoutSessionObj;
+
+        // extracting the desired data from the checkout session object
+        const { email, name } = customer_details ?? {}; // as Stripe.Checkout.Session.CustomerDetails;
+        const { customerId, priceId } = metadata ?? {};
+        const { amount_shipping, amount_discount, amount_tax } =
+            total_details ?? {};
+
+        return {
+            status,
+            sessionId: id,
+            totalAmount: amount_total,
+            sessionCreated: new Date(created * 1000),
+            currency,
+            userId: customer || customerId,
+            priceId,
+            paymentIntent: payment_intent,
+            paymentStatus: payment_status,
+            sessionUrl: url,
+            amountShipping: amount_shipping,
+            amountDiscount: amount_discount,
+            amountTax: amount_tax,
+            email: customer_email || email,
+            name,
+        };
+    } catch (error) {
+        console.log("Error in getDesiredDataFromCheckoutSession: ");
+        throw error;
+    }
+};

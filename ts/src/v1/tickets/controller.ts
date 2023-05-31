@@ -5,6 +5,7 @@ import {
 } from "./helpers/responseHandler";
 
 import Ticket from "./model";
+import Event from "../events/model";
 
 // get all tickets
 export const getTicketsController = async (
@@ -27,9 +28,48 @@ export const createTicketController = async (
     next: NextFunction
 ) => {
     try {
-        return sendErrorResponse(res, 501, "Not implemented");
+        // prevent from adding the user id from the request body
+        if (req.body.userId) delete req.body.userId;
+
+        const userId = res.locals?.authData?.uid;
+        const ticketQuantity = 1; // it is 1 for now
+
+        // see if the event is a valid one
+        const event = await Event.findOne({ _id: { $eq: req.body.eventId } });
+        if (!event || !event.priceId) {
+            return sendErrorResponse(res, 404, "Event or price not found");
+        }
+
+        // if the event has seat limit, check if the event has ticketQuantity number of tickets left
+        if (
+            event.maxTickets &&
+            event.maxTickets - event.ticketsSold < ticketQuantity
+        ) {
+            return sendErrorResponse(res, 409, "Ticket limit reached");
+        }
+
+        // issue a new ticket
+        const ticketData = await Ticket.createTicket({
+            ...req.body,
+            userId,
+            priceId: event.priceId,
+        });
+
+        return sendSuccessResponse(
+            res,
+            201,
+            "Ticket created successfully",
+            ticketData
+        );
     } catch (error: any) {
-        return sendErrorResponse(res, 500, "Internal Server Error");
+        console.log(error);
+
+        return sendErrorResponse(
+            res,
+            500,
+            "Internal Server Error",
+            error.message
+        );
     }
 };
 

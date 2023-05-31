@@ -17,7 +17,7 @@ export const TicketQueryFields = [
     "eventId",
     "oraganizerId",
     "type",
-    "ticketStatus",
+    "status",
     "paymentStatus",
 ];
 
