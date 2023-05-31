@@ -43,6 +43,8 @@ export const isRequestingUserAllowedToQuery = async (
         res,
         400,
         "Bad Request",
-        "eventId or userId is required"
+        !userId && !eventId
+            ? "Provide at least one of userId or eventId"
+            : "You can only view tickets that you own or tickets of events that you organize"
     );
 };
