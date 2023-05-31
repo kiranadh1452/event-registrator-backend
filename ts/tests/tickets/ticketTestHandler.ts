@@ -78,7 +78,7 @@ export const ticketTestEndpoint = () => {
 };
 
 export const createNewTicket = (
-    userData: any = customerDataJSON.origin_3,
+    userData: any = customerDataJSON.origin_4,
     eventData: any = eventDataJSON.origin_2
 ) => {
     tape("Check for new event type creation", async (t) => {
