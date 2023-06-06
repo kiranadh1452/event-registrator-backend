@@ -12,6 +12,7 @@ import UserRouter from "./src/v1/users/router.js";
 import EventRouter from "./src/v1/events/router.js";
 import TicketRouter from "./src/v1/tickets/router.js";
 import EventTypeRouter from "./src/v1/event-types/router.js";
+import StripeWebhookRouter from "./src/v1/stripe-handler/router.js";
 
 // set up dotenv, to allow us to use environment variables
 dotenv.config({
@@ -30,6 +31,14 @@ const limiter = RateLimit({
 
 app.use(limiter);
 app.set("port", port);
+
+// the webhook requires the raw body to construct the event
+app.use(
+    "/v1/stripe",
+    bodyParser.raw({ type: "application/json" }),
+    StripeWebhookRouter
+);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
