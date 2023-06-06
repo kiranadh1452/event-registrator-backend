@@ -69,28 +69,6 @@ export const stripeWebhookController = async (
 
         // handling the event
         switch (event.type) {
-            case "charge.succeeded":
-                const charge = event.data.object;
-                // what to do on charge success
-
-                break;
-
-            case "payment_intent.succeeded":
-                const paymentIntent = event.data.object;
-                // what to do on payment-intent success
-
-                break;
-
-            case "payment_intent.created":
-                const paymentIntentCreated = event.data.object;
-            // what to do on payment-intent creation
-
-            case "payment_intent.payment_failed":
-                const paymentIntentFailed = event.data.object;
-                // what to do on payment-intent failure
-
-                break;
-
             case "checkout.session.expired":
             case "checkout.session.completed":
             case "checkout.session.async_payment_failed":
@@ -100,8 +78,6 @@ export const stripeWebhookController = async (
                 const desiredData = getDesiredDataFromCheckoutSession(
                     session as any
                 );
-
-                console.log("Desired data is: ", desiredData);
 
                 // save the data to the database
                 const ticketUpdated = await onSessionCompleteController(
