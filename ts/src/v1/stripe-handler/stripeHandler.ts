@@ -267,3 +267,21 @@ export const getDesiredDataFromCheckoutSession = (
         throw error;
     }
 };
+
+export const createWebhook = async (
+    rawBody: string | Buffer,
+    signature: string | Buffer | Array<string>
+) => {
+    try {
+        const event = await stripe.webhooks.constructEvent(
+            rawBody,
+            signature,
+            process.env.STRIPE_WEBHOOK_SECRET as string
+        );
+
+        return event;
+    } catch (error) {
+        console.log("Error in createWebhook: ");
+        throw error;
+    }
+};
