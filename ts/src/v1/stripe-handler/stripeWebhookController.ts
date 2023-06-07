@@ -38,7 +38,7 @@ const onSessionCompleteController = async (desiredData: any) => {
 
             return true;
         }
-        console.log("Ticket not found");
+        console.log("Ticket not found for sessionId: ", sessionId);
         return false;
     } catch (error) {
         return false;
@@ -64,7 +64,10 @@ export const stripeWebhookController = async (
             console.log("Event type is: ", event.type);
         } catch (error: any) {
             console.log("Could not create webhook: ", error);
-            return res.status(400).send(`Webhook Error: ${error.message}`);
+            return res.status(400).json({
+                code: 400,
+                error: `Webhook Error: ${error.message}`,
+            });
         }
 
         // handling the event
@@ -86,15 +89,18 @@ export const stripeWebhookController = async (
 
                 // if the ticket is not updated, then return an error
                 if (!ticketUpdated) {
-                    return res.status(400).send("Error: Ticket not updated");
+                    return res.status(400).json({
+                        code: 400,
+                        error: "Error: Ticket not updated",
+                    });
                 }
 
                 break;
         }
 
         // Return a response to acknowledge receipt of the event
-        return res.status(200).json({ received: true });
+        return res.status(200).json({ code: 200, received: true });
     } catch (error: any) {
-        return res.status(500).json({ error: error.message });
+        return res.status(500).json({ code: 500, error: error.message });
     }
 };
