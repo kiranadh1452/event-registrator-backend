@@ -32,6 +32,6 @@ fi
 
 # Run docker-compose to run the backend - the docker file is generated on its own in docker-compose up
 echo "Starting the backend with docker-compose"
-sudo docker-compose up --build -d
+sudo docker-compose up --build
 
 exit 0
